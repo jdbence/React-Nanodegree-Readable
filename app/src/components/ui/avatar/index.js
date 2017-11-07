@@ -1,5 +1,4 @@
-import React from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components'
 
 const Avatar = styled.div`
   display: flex;
@@ -11,6 +10,6 @@ const Avatar = styled.div`
   background-color: rgb(70, 121, 255);
   color: white;
   font-size: 20px;
-`;
+`
 
-export default Avatar;
+export default Avatar

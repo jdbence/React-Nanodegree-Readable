@@ -1,0 +1,55 @@
+{
+  "parser"  : "babel-eslint",
+  "extends" : [
+    "standard",
+    "standard-react",
+    "prettier"
+  ],
+  "plugins": [
+    "babel",
+    "import",
+    "react",
+    "prettier"
+  ],
+  "env"     : {
+    "browser" : true
+  },
+  "globals" : {
+    "__DEV__"      : false,
+    "__PROD__"     : false,
+    "__DEBUG__"    : false,
+    "__COVERAGE__" : false,
+    "__BASENAME__" : false
+  },
+  "rules": {
+    "prettier/prettier": ["error", {
+      "singleQuote": true,
+      "semi": false,
+      "printWidth": 120
+    }],
+    "semi" : [2, "never"],
+    "max-len": [2, 120, 2],
+    "generator-star-spacing": 0,
+    "react/prop-types": 0,
+    "react/jsx-indent": 0,
+    "react/jsx-indent-props": 0,
+    "react/jsx-curly-spacing": 0,
+    "jsx-quotes": [2, "prefer-double"],
+    import/no-unresolved: 2,
+    import/named: 2,
+    import/namespace: 2,
+    import/default: 2,
+    import/export: 2
+  },
+  "settings": {
+    "import/ignore": [
+      "node_modules",
+      "\\.(scss|sass|css)$"
+    ],
+    "import/resolver": {
+      "webpack": {
+        "config": ".storybook/webpack.config.js"
+      }
+    }
+  }
+}
