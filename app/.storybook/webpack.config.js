@@ -35,8 +35,7 @@ const config = {
           {
             loader: 'file-loader',
             options: {
-              name: '[path][name].[ext]',
-              publicPath: 'static/'
+              name: '[path][name].[ext]'
             }  
           }
         ]

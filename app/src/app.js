@@ -12,8 +12,8 @@ class App extends Component {
         <ConnectedRouter history={history}>
           <div>
             <Route path="/" exact component={HomeRoute} />
-            <Route path="/post/:id" exact component={PostRoute} />
             <Route path="/:category" exact component={CategoryRoute} />
+            <Route path="/:category/:post_id" exact component={PostRoute} />
           </div>
         </ConnectedRouter>
       </Provider>

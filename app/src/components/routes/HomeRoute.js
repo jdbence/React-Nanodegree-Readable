@@ -3,22 +3,12 @@ import {connect} from 'react-redux'
 import styled, {css} from 'styled-components'
 import Card from 'components/ui/card'
 import Image from 'components/ui/image'
-import Avatar from 'components/ui/avatar'
-import Header, {HeaderContent} from 'components/ui/header'
+import {Avatar, AvatarDesc} from 'components/ui/avatar'
+import {Header, HeaderContent} from 'components/ui/header'
 import {Link} from 'react-router-dom'
 import {dash} from 'utils/StringUtil'
-import backIcon from 'static/icon/arrow-back.svg'
-
-const ellipsisMixin = css`
-  display: block; /* Fallback for non-webkit */
-  display: -webkit-box;
-  font-size: ${props => props.size}px;
-  line-height: ${props => props.height};
-  -webkit-line-clamp: ${props => props.lines};
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`
+import {BackButton} from 'components/ui/button'
+import {default as ellipsis} from 'components/mixin/ellipsis'
 
 const CardContainer = styled.div`
   display: flex;
@@ -73,47 +63,13 @@ const CardBody = styled.div.attrs({
   }
   & p {
     margin-bottom: 0;
-    ${props => ellipsisMixin};
+    ${props => ellipsis};
   }
 `
 
 const AvatarContainer = styled.div`
   display: flex;
 `
-
-const AvatarDesc = styled.div.attrs({
-  size: props => 16,
-  height: props => 1.4,
-  lines: props => 1
-})`
-  flex: 1;
-  flex-direction: column;
-  padding-left: 10px;
-  display: flex;
-  justify-content: space-between;
-  & p {
-    margin: 0;
-    ${props => ellipsisMixin};
-  }
-`
-
-const IconButton = styled.button`
-  width: 56px;
-  height: 56px;
-  padding: 0;
-  min-width: 0;
-  & > img {
-    width: 50%;
-  }
-`
-
-const BackButton = props => {
-  return (
-    <IconButton onClick={props.onClick}>
-      <img src={backIcon} alt="backIcon" />
-    </IconButton>
-  )
-}
 
 class HomeRoute extends Component {
   render () {
@@ -145,67 +101,87 @@ class HomeRoute extends Component {
     ]
     const data = [
       {
+        id: '012345',
         title: 'Article Title',
+        category: 'characters',
         body:
           'Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body',
         img: 'https://cdn-images-1.medium.com/max/400/1*cyKYMbZY8mvfeCPBeXZAtg.jpeg'
       },
       {
+        id: '012345',
         title: 'Article Title',
+        category: 'characters',
         body:
           'Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body',
         img: 'https://cdn-images-1.medium.com/max/400/1*cyKYMbZY8mvfeCPBeXZAtg.jpeg'
       },
       {
+        id: '012345',
         title: 'Article Title',
+        category: 'characters',
         body:
           'Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body',
         img: 'https://cdn-images-1.medium.com/max/400/1*cyKYMbZY8mvfeCPBeXZAtg.jpeg'
       },
       {
+        id: '012345',
         title: 'Article Title',
+        category: 'characters',
         body:
           'Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body',
         img: 'https://cdn-images-1.medium.com/max/400/1*cyKYMbZY8mvfeCPBeXZAtg.jpeg'
       },
       {
+        id: '012345',
         title: 'Article Title',
+        category: 'characters',
         body:
           'Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body',
         img: 'https://cdn-images-1.medium.com/max/400/1*cyKYMbZY8mvfeCPBeXZAtg.jpeg'
       },
       {
+        id: '012345',
         title: 'Article Title',
+        category: 'characters',
         body:
           'Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body',
         img: 'https://cdn-images-1.medium.com/max/400/1*cyKYMbZY8mvfeCPBeXZAtg.jpeg'
       },
       {
+        id: '012345',
         title: 'Article Title',
+        category: 'characters',
         body:
           'Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body',
         img: 'https://cdn-images-1.medium.com/max/400/1*cyKYMbZY8mvfeCPBeXZAtg.jpeg'
       },
       {
+        id: '012345',
         title: 'Article Title',
+        category: 'characters',
         body:
           'Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body',
         img: 'https://cdn-images-1.medium.com/max/400/1*cyKYMbZY8mvfeCPBeXZAtg.jpeg'
       },
       {
+        id: '012345',
         title: 'Article Title',
+        category: 'characters',
         body:
           'Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body',
         img: 'https://cdn-images-1.medium.com/max/400/1*cyKYMbZY8mvfeCPBeXZAtg.jpeg'
       },
       {
+        id: '012345',
         title: 'Article Title',
+        category: 'characters',
         body:
           'Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body',
         img: 'https://cdn-images-1.medium.com/max/400/1*cyKYMbZY8mvfeCPBeXZAtg.jpeg'
       }
     ]
-    const linkStyle = {textDecoration: 'none'}
+    const linkStyle = {textDecoration: 'none', color:'inherit'}
     return (
       <div className="App">
         <Header>
@@ -216,30 +192,32 @@ class HomeRoute extends Component {
         <Categories>
           <CategoriesInner>
             {categories.map((d, i) => (
-              <Link to={`/${dash(d)}`} style={linkStyle}>
-                <Category key={`category_${i}`}>{d}</Category>
+              <Link key={`category_${i}`} to={`/${dash(d)}`} style={linkStyle}>
+                <Category >{d}</Category>
               </Link>
             ))}
           </CategoriesInner>
         </Categories>
         <CardContainer>
           {data.map((d, i) => (
-            <Card key={`card_${i}`} query={CardQuery} height={280} maxWidth={500}>
-              <Image href={d.img} className="image" />
-              <CardBody>
-                <div>
-                  <h3>{d.title}</h3>
-                  <p>{d.body}</p>
-                </div>
-                <AvatarContainer>
-                  <Avatar>T</Avatar>
-                  <AvatarDesc>
-                    <p>Author name</p>
-                    <p>Oct 18</p>
-                  </AvatarDesc>
-                </AvatarContainer>
-              </CardBody>
-            </Card>
+            <Link key={`card_${i}`} to={`/${d.category}/${d.id}`} style={linkStyle}>
+              <Card query={CardQuery} height={280} maxWidth={500}>
+                <Image href={d.img} className="image" />
+                <CardBody>
+                  <div>
+                    <h3>{d.title}</h3>
+                    <p>{d.body}</p>
+                  </div>
+                  <AvatarContainer>
+                    <Avatar>T</Avatar>
+                    <AvatarDesc>
+                      <p>Author name</p>
+                      <p>Oct 18</p>
+                    </AvatarDesc>
+                  </AvatarContainer>
+                </CardBody>
+              </Card>
+            </Link>
           ))}
         </CardContainer>
       </div>
