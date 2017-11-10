@@ -26,7 +26,7 @@ export const fetchComments = (id) => {
 
 export const fetchPosts = (category) => {
   const options = { headers }
-  return fetch(`${api + (category||'')}/posts`, options)
+  return fetch(`${api + (category ? `/${category}` : '')}/posts`, options)
     .then(res => res.json())
     .catch(err => console.error(err))
 }

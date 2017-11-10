@@ -16,7 +16,7 @@ const AppHtmlConfig = new HtmlWebpackPlugin({
 
 config.context = ROOT_PATH
 config.entry = {
-  index: ['whatwg-fetch', 'babel-polyfill', path.resolve(SRC_PATH, 'index.js')]
+  index: ['babel-polyfill', path.resolve(SRC_PATH, 'index.js')]
 }
 
 config.output = {

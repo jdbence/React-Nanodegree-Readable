@@ -1,65 +1,60 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-import logo from 'static/icon/logo.svg'
-import SwipeableViews from 'react-swipeable-views'
+import styled from 'styled-components'
 import {Header, HeaderContent} from 'components/ui/header'
+import Article from 'components/ui/article'
 import {BackButton} from 'components/ui/button'
-import { push } from 'react-router-redux'
+import { push, goBack } from 'react-router-redux'
+import { getPosts } from 'modules/PostModule'
+import { capitalize } from 'utils/StringUtil'
 
-const styles = {
-  slideContainer: {
-    padding: '0 10px',
-  },
-  slide: {
-    padding: 15,
-    minHeight: 100,
-    color: '#fff',
-  },
-  slide1: {
-    background: '#FEA900',
-  },
-  slide2: {
-    background: '#B3DC4A',
-  },
-  slide3: {
-    background: '#6AC0FF',
-  },
-};
-
-const CardsView = () => (
-  <SwipeableViews enableMouseEvents slideStyle={styles.slideContainer}>
-    <div style={Object.assign({}, styles.slide, styles.slide1)}>
-      slide n°1
-    </div>
-    <div style={Object.assign({}, styles.slide, styles.slide2)}>
-      slide n°2
-    </div>
-    <div style={Object.assign({}, styles.slide, styles.slide3)}>
-      slide n°3
-    </div>
-  </SwipeableViews>
-);
+const CardContainer = styled.div`
+  display: flex;
+  padding-left: 16px;
+  padding-right: 16px;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+`
 
 class CategoryRoute extends Component {
+  
+  componentDidMount(){
+    const { posts, match } = this.props
+    const category = match.params.category
+    if(posts.length === 0){
+      this.props.getPosts(category)
+    }
+  }
+  
   render () {
+    const { posts, match, goto, goBack } = this.props
+    const category = match.params.category
     return (
       <div className="App">
         <Header>
-          <BackButton onClick={() => this.props.push('/')}/>
-          <HeaderContent>header</HeaderContent>
+          <BackButton onClick={goBack}/>
+          <HeaderContent>{capitalize(category)}</HeaderContent>
         </Header>
-        <CardsView />
+        <div style={{height: 56}} />
+        <CardContainer>
+          {posts.map(p => <Article {...p} key={`card_${p.id}`} onClick={()=>goto(`/${p.category}/${p.id}`)}/>)}
+        </CardContainer>
       </div>
     )
   }
 }
 
 const mapDispatchToProps = {
-  push
+  getPosts,
+  goBack,
+  goto: push
 }
 
-const mapStateToProps = state => ({
-  posts: {}
-})
+const mapStateToProps = state => {
+  const category = state.router.location.pathname.split('/')[1]
+  return {
+    posts: state.posts.filter(item => item.category === category)
+  }
+}
 
 export default connect(mapStateToProps, mapDispatchToProps)(CategoryRoute)

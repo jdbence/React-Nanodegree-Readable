@@ -1,5 +1,6 @@
 import { createAction, handleActions } from 'redux-actions'
 import { fetchPosts } from 'utils/ArticleAPI'
+import { uniqueArray } from 'utils/ArrayUtil'
 
 // Constants
 const ADD_POST = 'ADD_POST@Readable'
@@ -26,7 +27,7 @@ const initialState = []
 
 export default handleActions(
   {
-    [SET_POSTS]: (state, { payload }) => payload,
+    [SET_POSTS]: (state, { payload }) => uniqueArray([...state, ...payload]),
     [ADD_POST]: (state, { payload }) => [...state, payload],
     [REMOVE_POST]: (state, { payload }) => state.filter(item => item.id !== payload.id)
   },
