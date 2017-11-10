@@ -4,6 +4,7 @@ import {Route} from 'react-router'
 import {ConnectedRouter} from 'react-router-redux'
 import {HomeRoute, PostRoute, CategoryRoute} from 'components/routes'
 import store, {history} from './store'
+import 'whatwg-fetch'
 
 class App extends Component {
   render () {

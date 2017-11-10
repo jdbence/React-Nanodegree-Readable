@@ -6,9 +6,12 @@ import Image from 'components/ui/image'
 import {Avatar, AvatarDesc} from 'components/ui/avatar'
 import {Header, HeaderContent} from 'components/ui/header'
 import {Link} from 'react-router-dom'
-import {dash} from 'utils/StringUtil'
+import {dash, timestamp} from 'utils/StringUtil'
 import {BackButton} from 'components/ui/button'
 import {default as ellipsis} from 'components/mixin/ellipsis'
+//import { fetchComments, fetchCategories, fetchPosts } from 'utils/ArticleAPI'
+import { getCategories } from 'modules/CategoryModule'
+import { getPosts } from 'modules/PostModule'
 
 const CardContainer = styled.div`
   display: flex;
@@ -70,10 +73,7 @@ const CardBody = styled.div.attrs({
 const AvatarContainer = styled.div`
   display: flex;
 `
-
-class HomeRoute extends Component {
-  render () {
-    const CardQuery = `
+const CardQuery = `
       flex-direction: column;
       width: 100%;
       & > .image {
@@ -89,117 +89,38 @@ class HomeRoute extends Component {
         }
       }
     `
-    const categories = [
-      'Characters',
-      'Creatures',
-      'Droids',
-      'Locations',
-      'Organizations',
-      'Species',
-      'Vehicles',
-      'Weapons+Tech'
-    ]
-    const data = [
-      {
-        id: '012345',
-        title: 'Article Title',
-        category: 'characters',
-        body:
-          'Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body',
-        img: 'https://cdn-images-1.medium.com/max/400/1*cyKYMbZY8mvfeCPBeXZAtg.jpeg'
-      },
-      {
-        id: '012345',
-        title: 'Article Title',
-        category: 'characters',
-        body:
-          'Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body',
-        img: 'https://cdn-images-1.medium.com/max/400/1*cyKYMbZY8mvfeCPBeXZAtg.jpeg'
-      },
-      {
-        id: '012345',
-        title: 'Article Title',
-        category: 'characters',
-        body:
-          'Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body',
-        img: 'https://cdn-images-1.medium.com/max/400/1*cyKYMbZY8mvfeCPBeXZAtg.jpeg'
-      },
-      {
-        id: '012345',
-        title: 'Article Title',
-        category: 'characters',
-        body:
-          'Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body',
-        img: 'https://cdn-images-1.medium.com/max/400/1*cyKYMbZY8mvfeCPBeXZAtg.jpeg'
-      },
-      {
-        id: '012345',
-        title: 'Article Title',
-        category: 'characters',
-        body:
-          'Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body',
-        img: 'https://cdn-images-1.medium.com/max/400/1*cyKYMbZY8mvfeCPBeXZAtg.jpeg'
-      },
-      {
-        id: '012345',
-        title: 'Article Title',
-        category: 'characters',
-        body:
-          'Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body',
-        img: 'https://cdn-images-1.medium.com/max/400/1*cyKYMbZY8mvfeCPBeXZAtg.jpeg'
-      },
-      {
-        id: '012345',
-        title: 'Article Title',
-        category: 'characters',
-        body:
-          'Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body',
-        img: 'https://cdn-images-1.medium.com/max/400/1*cyKYMbZY8mvfeCPBeXZAtg.jpeg'
-      },
-      {
-        id: '012345',
-        title: 'Article Title',
-        category: 'characters',
-        body:
-          'Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body',
-        img: 'https://cdn-images-1.medium.com/max/400/1*cyKYMbZY8mvfeCPBeXZAtg.jpeg'
-      },
-      {
-        id: '012345',
-        title: 'Article Title',
-        category: 'characters',
-        body:
-          'Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body',
-        img: 'https://cdn-images-1.medium.com/max/400/1*cyKYMbZY8mvfeCPBeXZAtg.jpeg'
-      },
-      {
-        id: '012345',
-        title: 'Article Title',
-        category: 'characters',
-        body:
-          'Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body Article Body Article Body Article Body Article Body Body Article Body Article Body Article Body',
-        img: 'https://cdn-images-1.medium.com/max/400/1*cyKYMbZY8mvfeCPBeXZAtg.jpeg'
-      }
-    ]
-    const linkStyle = {textDecoration: 'none', color:'inherit'}
+const linkStyle = {textDecoration: 'none', color:'inherit'}
+
+class HomeRoute extends Component {
+  componentDidMount() {
+    // fetchComments('8xf0y6ziyjabvozdd253nd').then(d => console.log('fetchComments', d))
+    // fetchCategories().then(d => console.log('fetchCategories', d))
+    // fetchPosts().then(d => console.log('fetchPosts', d))
+    // fetchPosts('/redux').then(d => console.log('fetchPosts', d))
+    this.props.getCategories()
+    this.props.getPosts()
+  }
+  
+  render () {
+    const { categories, posts } = this.props
+    
     return (
       <div className="App">
         <Header>
-          <BackButton />
-          <HeaderContent>header</HeaderContent>
+          <HeaderContent>Readable</HeaderContent>
         </Header>
         <div style={{height: 56}} />
         <Categories>
           <CategoriesInner>
             {categories.map((d, i) => (
-              <Link key={`category_${i}`} to={`/${dash(d)}`} style={linkStyle}>
-                <Category >{d}</Category>
+              <Link key={`category_${i}`} to={`/${dash(d.name)}`} style={linkStyle}>
+                <Category>{d.name}</Category>
               </Link>
             ))}
           </CategoriesInner>
         </Categories>
         <CardContainer>
-          {data.map((d, i) => (
+          {posts.map((d, i) => (
             <Link key={`card_${i}`} to={`/${d.category}/${d.id}`} style={linkStyle}>
               <Card query={CardQuery} height={280} maxWidth={500}>
                 <Image href={d.img} className="image" />
@@ -211,8 +132,8 @@ class HomeRoute extends Component {
                   <AvatarContainer>
                     <Avatar>T</Avatar>
                     <AvatarDesc>
-                      <p>Author name</p>
-                      <p>Oct 18</p>
+                      <p>{d.author}</p>
+                      <p>{timestamp(d.timestamp)}</p>
                     </AvatarDesc>
                   </AvatarContainer>
                 </CardBody>
@@ -225,10 +146,14 @@ class HomeRoute extends Component {
   }
 }
 
-const mapDispatchToProps = {}
+const mapDispatchToProps = {
+  getCategories,
+  getPosts
+}
 
 const mapStateToProps = state => ({
-  books: {} // state.books.books
+  categories: state.categories,
+  posts: state.posts
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomeRoute)

@@ -1,2 +1,3 @@
-exports.port = process.env.PORT || 3001
-exports.origin = process.env.ORIGIN || `http://localhost:${exports.port}`
+exports.port = 8081
+exports.ip = process.env.IP || 'localhost'
+exports.origin = process.env.ORIGIN || `https://${exports.ip}:${exports.port}`

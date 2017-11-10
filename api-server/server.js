@@ -9,10 +9,9 @@ const posts = require('./posts')
 const comments = require('./comments')
 
 const app = express()
-
-app.use(express.static('public'))
+app.options('*', cors())
 app.use(cors())
-
+app.use(express.static('public'))
 
 app.get('/', (req, res) => {
   const help = `
@@ -113,8 +112,11 @@ app.get('/', (req, res) => {
 })
 
 app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Credentials', true);
+  res.header('Access-Control-Allow-Headers', 'content-type, authorization, content-length, x-requested-with, accept, origin');
+  res.header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
+  res.header('Access-Control-Allow-Origin', '*');
   const token = req.get('Authorization')
-
   if (token) {
     req.token = token
     next()
@@ -124,7 +126,6 @@ app.use((req, res, next) => {
     })
   }
 })
-
 
 app.get('/categories', (req, res) => {
     categories.getAll(req.token)
@@ -312,6 +313,7 @@ app.delete('/comments/:id', (req, res) => {
       )
 })
 
-app.listen(config.port, () => {
+app.listen(config.port, config.ip, () => {
   console.log('Server listening on port %s, Ctrl+C to stop', config.port)
+  console.log(config.origin)
 })

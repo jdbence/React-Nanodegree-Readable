@@ -16,7 +16,7 @@ const AppHtmlConfig = new HtmlWebpackPlugin({
 
 config.context = ROOT_PATH
 config.entry = {
-  index: path.resolve(SRC_PATH, 'index.js')
+  index: ['whatwg-fetch', 'babel-polyfill', path.resolve(SRC_PATH, 'index.js')]
 }
 
 config.output = {
@@ -36,7 +36,8 @@ config.plugins = [
 config.devServer = {
   headers: {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept'
+    'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS'
   },
   port: 8080,
   host: '0.0.0.0',

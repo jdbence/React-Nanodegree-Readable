@@ -32,7 +32,9 @@
     "url": "https://github.com/jdbence/React-Nanodegree-Readable/issues"
   },
   "homepage": "https://github.com/jdbence/React-Nanodegree-Readable#readme",
-  "dependencies": {},
+  "dependencies": {
+    "babel-polyfill": "^6.26.0"
+  },
   "devDependencies": {
     "@storybook/addon-actions": "^3.2.14",
     "@storybook/addon-links": "^3.2.14",
@@ -89,7 +91,8 @@
     "storybook-readme": "^3.1.1",
     "styled-components": "^2.2.1",
     "webpack": "^3.8.1",
-    "webpack-dev-server": "^2.9.4"
+    "webpack-dev-server": "^2.9.4",
+    "whatwg-fetch": "^2.0.3"
   },
   "jest": {
     "setupFiles": [

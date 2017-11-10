@@ -14,8 +14,7 @@ const config = {
   
   output: {
     path: DIST_PATH,
-    publicPath: '/',
-    devtoolModuleFilenameTemplate: info => path.resolve(info.absoluteResourcePath)
+    publicPath: '/'
   },
   resolve: {
     alias: {
@@ -24,6 +23,7 @@ const config = {
       static: path.resolve(SRC_PATH, 'static'),
       styles: path.resolve(SRC_PATH, 'styles'),
       utils: path.resolve(SRC_PATH, 'utils'),
+      modules: path.resolve(SRC_PATH, 'modules'),
       '.storybook': path.resolve(ROOT_PATH, '.storybook')
     }
   },
