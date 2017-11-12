@@ -1,17 +1,27 @@
 import React, {Component} from 'react'
+import styled from 'styled-components'
 import {connect} from 'react-redux'
 import {Header, HeaderContent} from 'components/ui/header'
-import {IconButton} from 'components/ui/button'
+import Page from 'components/ui/page'
+import {Button, IconButton} from 'components/ui/button'
+import Card from 'components/ui/card'
+import Splash from 'components/ui/splash'
 import SwipeableViews from 'react-swipeable-views'
 import { goBack } from 'react-router-redux'
 import { getPosts } from 'modules/PostModule'
 import { capitalize } from 'utils/StringUtil'
 import md from 'react-markings'
-import CodeMirror from 'react-codemirror'
+import getTitle from 'get-md-title';
+import {Controlled as CodeMirror} from 'react-codemirror2'
 import backIcon from 'static/icon/arrow-back.svg'
+import trashIcon from 'static/icon/garbage.svg'
 import saveIcon from 'static/icon/upload.svg'
 import editIcon from 'static/icon/edit.svg'
 import cancelIcon from 'static/icon/cancel.svg'
+import robotIcon from 'static/icon/robot.svg'
+
+const MISSING_TITLE = 'missingTitle';
+const EDIT = 'edit';
 
 const styles = {
   slideContainer: {
@@ -39,12 +49,47 @@ const temppostSource = `
   - Renders markdown as React elements using [commonmark-react-renderer](https://github.com/rexxars/commonmark-react-renderer)
   - Embed React components inside your markdown (in any paragraph position) like this:
 `
+const CardBody = styled.div`
+  display: inline-flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 10px;
+`
+const Code = styled.code`
+  background-color: #e8e8e8;
+  padding: 10px;
+`
 
-const CardsView = ({posts}) => (
+const Fill = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`;
+
+const MissingTitle = ({onAddTitle, onClose}) => (
+  <Splash onClick={onClose}>
+    <Card maxWidth={800} width="100%">
+      <img src={robotIcon} alt="Robot" style={{padding: 10}}/>
+      <CardBody>
+        <h2>Create a title before saving..</h2>
+        <Fill>
+          <Code># Example Title</Code>
+        </Fill>
+        <div>
+          <Button onClick={onAddTitle}>Add Example Title</Button>
+          <Button>Close</Button>
+        </div>
+      </CardBody>
+    </Card>
+  </Splash>
+)
+
+const CardsView = ({posts, source}) => (
   <SwipeableViews enableMouseEvents slideStyle={styles.slideContainer}>
     {posts.map(p =>
     <div key={`card_${p.id}`} style={Object.assign({}, styles.slide, styles.slide1)}>
-      {md([temppostSource])}
+      {md([source])}
     </div>)}
   </SwipeableViews>
 );
@@ -53,7 +98,8 @@ class PostRoute extends Component {
   
   state = {
     postSource: temppostSource,
-    edit: false
+    edit: false,
+    missingTitle: false
   }
   
   componentDidMount(){
@@ -62,48 +108,73 @@ class PostRoute extends Component {
     if(posts.length === 0){
       this.props.getPosts(category)
     }
+    
   }
   
-  updatePost = (source) => {
+  updatePost = (editor, data, value) => {
     this.setState({
       ...this.state,
-			postSource: source,
+			postSource: value,
 		})
   }
   
-  toggleEdit = () => {
+  toggle = (prop) => {
     this.setState({
       ...this.state,
-			edit: !this.state.edit,
+			[prop]: !this.state[prop],
 		})
   }
   
+  addTitle = () => {
+    const {postSource} = this.state
+    const title = getTitle(postSource)
+    if(!title){
+      //TODO: why timeout required?
+      setTimeout(() => {
+        this.updatePost(null, null, `# Example Title \n ${postSource}`)
+      }, 100)
+    }
+  }
+  
+  saveArticle = () => {
+    const {postSource} = this.state
+    const title = getTitle(postSource)
+    if(title){
+      //TODO: Save article and title seperately
+      this.toggle(EDIT);
+    } else {
+      this.toggle(MISSING_TITLE);
+    }
+  }
   render () {
     const { posts, match, goBack } = this.props
-    const { postSource, edit } = this.state
+    const { postSource, edit, missingTitle } = this.state
     const category = match.params.category
-    const options =  {}
+    const options =  { mode: 'markdown'}
     return (
-      <div className="App">
+      <div className="app">
         {
           edit
           ? <Header>
               <HeaderContent padded>Editing Article</HeaderContent>
-              <IconButton src={saveIcon} alt="save" onClick={this.toggleEdit}/>
-              <IconButton src={cancelIcon} alt="cancel" onClick={this.toggleEdit}/>
+              <IconButton src={trashIcon} alt="trash" onClick={this.saveArticle}/>
+              <IconButton src={saveIcon} alt="save" onClick={this.saveArticle}/>
+              <IconButton src={cancelIcon} alt="cancel" onClick={() => this.toggle(EDIT)}/>
             </Header>
           : <Header>
               <IconButton src={backIcon} alt="back" onClick={goBack}/>
               <HeaderContent>{capitalize(category)}</HeaderContent>
-              <IconButton src={editIcon} alt="edit" onClick={this.toggleEdit}/>
+              <IconButton src={editIcon} alt="edit" onClick={() => this.toggle(EDIT)}/>
             </Header>
         }
-        <div style={{height: 56}} />
-        {
-          edit
-          ? <CodeMirror value={postSource} onChange={this.updatePost} options={options} />
-          : <CardsView posts={posts} />
-        }
+        <Page>
+          {
+            edit
+            ? <CodeMirror value={postSource} onBeforeChange={this.updatePost} options={options} />
+            : <CardsView source={postSource} posts={posts} />
+          }
+        </Page>
+        { missingTitle && <MissingTitle onAddTitle={() => this.addTitle()} onClose={() => this.toggle(MISSING_TITLE)}/> }
       </div>
     )
   }

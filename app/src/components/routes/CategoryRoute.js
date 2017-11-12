@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import styled from 'styled-components'
 import {Header, HeaderContent} from 'components/ui/header'
+import Page from 'components/ui/page'
 import Article from 'components/ui/article'
 import {IconButton} from 'components/ui/button'
 import { push, goBack } from 'react-router-redux'
@@ -32,16 +33,17 @@ class CategoryRoute extends Component {
     const { posts, match, goto, goBack } = this.props
     const category = match.params.category
     return (
-      <div className="App">
+      <div className="app">
         <Header>
           <IconButton src={backIcon} alt="back" onClick={goBack}/>
           <HeaderContent>{capitalize(category)}</HeaderContent>
           <IconButton src={settingsIcon} alt="settings"/>
         </Header>
-        <div style={{height: 56}} />
-        <CardContainer>
-          {posts.map(p => <Article {...p} key={`card_${p.id}`} onClick={()=>goto(`/${p.category}/${p.id}`)}/>)}
-        </CardContainer>
+        <Page>
+          <CardContainer>
+            {posts.map(p => <Article {...p} key={`card_${p.id}`} onClick={()=>goto(`/${p.category}/${p.id}`)}/>)}
+          </CardContainer>
+        </Page>
       </div>
     )
   }

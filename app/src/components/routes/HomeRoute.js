@@ -4,6 +4,8 @@ import styled from 'styled-components'
 import {Header, HeaderContent} from 'components/ui/header'
 import Article from 'components/ui/article'
 import {IconButton} from 'components/ui/button'
+import Page from 'components/ui/page'
+import Drawer from 'components/ui/drawer'
 import {Link} from 'react-router-dom'
 import { dash } from 'utils/StringUtil'
 import { getCategories } from 'modules/CategoryModule'
@@ -13,8 +15,6 @@ import settingsIcon from 'static/icon/settings.svg'
 
 const CardContainer = styled.div`
   display: flex;
-  padding-left: 16px;
-  padding-right: 16px;
   flex-wrap: wrap;
   justify-content: space-evenly;
 `
@@ -51,6 +51,11 @@ const Category = styled.div`
 const linkStyle = {textDecoration: 'none', color:'inherit'}
 
 class HomeRoute extends Component {
+  
+  state = {
+    settings: false
+  }
+  
   componentDidMount() {
     // fetchComments('8xf0y6ziyjabvozdd253nd').then(d => console.log('fetchComments', d))
     // fetchCategories().then(d => console.log('fetchCategories', d))
@@ -65,28 +70,41 @@ class HomeRoute extends Component {
   
   render () {
     const { categories, posts, goto } = this.props
+    const { settings } = this.state
     
     return (
-      <div className="App">
+      <div className="app">
         <Header>
           <HeaderContent padded>Readable</HeaderContent>
-          <IconButton src={settingsIcon} alt="settings"/>
+          <IconButton src={settingsIcon} alt="settings" onClick={() => this.toggle('settings')}/>
         </Header>
-        <div style={{height: 56}} />
-        <Categories>
-          <CategoriesInner>
-            {categories.map(d => (
-              <Link key={`category_${d.name}`} to={`/${dash(d.name)}`} style={linkStyle}>
-                <Category>{d.name}</Category>
-              </Link>
-            ))}
-          </CategoriesInner>
-        </Categories>
-        <CardContainer>
-          {posts.map(p => <Article {...p} key={`card_${p.id}`} onClick={()=>goto(`/${p.category}/${p.id}`)}/>)}
-        </CardContainer>
+        <Page>
+          <Categories>
+            <CategoriesInner>
+              {categories.map(d => (
+                <Link key={`category_${d.name}`} to={`/${dash(d.name)}`} style={linkStyle}>
+                  <Category>{d.name}</Category>
+                </Link>
+              ))}
+            </CategoriesInner>
+          </Categories>
+          <CardContainer>
+            {posts.map(p => <Article {...p} key={`card_${p.id}`} onClick={()=>goto(`/${p.category}/${p.id}`)}/>)}
+          </CardContainer>
+        </Page>
+        {settings && <Drawer onClick={() => this.toggle('settings')}>
+          Settings
+        </Drawer>
+        }
       </div>
     )
+  }
+  
+  toggle = (prop) => {
+    this.setState({
+      ...this.state,
+			[prop]: !this.state[prop],
+		})
   }
 }
 
