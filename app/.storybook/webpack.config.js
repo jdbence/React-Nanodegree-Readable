@@ -56,7 +56,8 @@ const config = {
   plugins: [
     new CopyWebpackPlugin([
       { from: 'src/static', to: 'static' },
-      { from: 'node_modules/normalize.css/normalize.css', to:'static/normalize.css'}
+      { from: 'node_modules/normalize.css/normalize.css', to:'static/normalize.css'},
+      { from: 'node_modules/codemirror/lib/codemirror.css', to:'static/codemirror.css'}
     ])
   ],
 }

@@ -5,8 +5,6 @@ const HeaderInner = styled.div`
   display: flex;
   position: relative;
   min-height: 56px;
-  padding-left: 16px;
-  padding-right: 16px;
 `
 
 const Header = styled.header`

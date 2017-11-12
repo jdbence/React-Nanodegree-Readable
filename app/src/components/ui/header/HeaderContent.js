@@ -6,5 +6,6 @@ const HeaderContent = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  ${props => props.padded ? 'padding: 0 16px;' : ''}
 `
 export default HeaderContent

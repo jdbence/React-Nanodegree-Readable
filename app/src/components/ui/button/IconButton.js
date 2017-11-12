@@ -11,4 +11,12 @@ const IconButton = Button.extend`
     width: 50%;
   }
 `
-export default IconButton
+
+const IconHOC = props => {
+  return (
+    <IconButton onClick={props.onClick}>
+      <img src={props.src} alt={props.alt} />
+    </IconButton>
+  )
+}
+export default IconHOC

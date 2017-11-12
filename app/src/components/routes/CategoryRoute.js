@@ -3,10 +3,12 @@ import {connect} from 'react-redux'
 import styled from 'styled-components'
 import {Header, HeaderContent} from 'components/ui/header'
 import Article from 'components/ui/article'
-import {BackButton} from 'components/ui/button'
+import {IconButton} from 'components/ui/button'
 import { push, goBack } from 'react-router-redux'
 import { getPosts } from 'modules/PostModule'
 import { capitalize } from 'utils/StringUtil'
+import backIcon from 'static/icon/arrow-back.svg'
+import settingsIcon from 'static/icon/settings.svg'
 
 const CardContainer = styled.div`
   display: flex;
@@ -32,8 +34,9 @@ class CategoryRoute extends Component {
     return (
       <div className="App">
         <Header>
-          <BackButton onClick={goBack}/>
+          <IconButton src={backIcon} alt="back" onClick={goBack}/>
           <HeaderContent>{capitalize(category)}</HeaderContent>
+          <IconButton src={settingsIcon} alt="settings"/>
         </Header>
         <div style={{height: 56}} />
         <CardContainer>

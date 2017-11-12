@@ -3,11 +3,13 @@ import {connect} from 'react-redux'
 import styled from 'styled-components'
 import {Header, HeaderContent} from 'components/ui/header'
 import Article from 'components/ui/article'
+import {IconButton} from 'components/ui/button'
 import {Link} from 'react-router-dom'
 import { dash } from 'utils/StringUtil'
 import { getCategories } from 'modules/CategoryModule'
 import { getPosts } from 'modules/PostModule'
 import { push } from 'react-router-redux'
+import settingsIcon from 'static/icon/settings.svg'
 
 const CardContainer = styled.div`
   display: flex;
@@ -67,7 +69,8 @@ class HomeRoute extends Component {
     return (
       <div className="App">
         <Header>
-          <HeaderContent>Readable</HeaderContent>
+          <HeaderContent padded>Readable</HeaderContent>
+          <IconButton src={settingsIcon} alt="settings"/>
         </Header>
         <div style={{height: 56}} />
         <Categories>
