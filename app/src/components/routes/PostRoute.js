@@ -188,7 +188,13 @@ const mapDispatchToProps = {
 const mapStateToProps = state => {
   const category = state.router.location.pathname.split('/')[1]
   return {
-    posts: state.posts.filter(item => item.category === category)
+    posts: state.posts
+      .filter(item => item.category === category)
+      .sort((a, b) => {
+        let aT = a.title.toLowerCase();
+        let bT = b.title.toLowerCase();
+        return aT < bT ? (aT > bT ? 1 : 0) : -1;
+      })
   }
 }
 

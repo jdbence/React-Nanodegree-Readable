@@ -4,14 +4,17 @@ import styled from 'styled-components'
 import {Header, HeaderContent} from 'components/ui/header'
 import Article from 'components/ui/article'
 import {IconButton} from 'components/ui/button'
+import Radio from 'components/ui/radio'
 import Page from 'components/ui/page'
 import Drawer from 'components/ui/drawer'
 import {Link} from 'react-router-dom'
 import { dash } from 'utils/StringUtil'
+import { alphaSort, dateSort, ratingSort } from 'utils/ArrayUtil'
 import { getCategories } from 'modules/CategoryModule'
 import { getPosts } from 'modules/PostModule'
 import { push } from 'react-router-redux'
 import settingsIcon from 'static/icon/settings.svg'
+import {setSort, ALPHA, DATE, RATING} from 'modules/SortModule'
 
 const CardContainer = styled.div`
   display: flex;
@@ -57,10 +60,6 @@ class HomeRoute extends Component {
   }
   
   componentDidMount() {
-    // fetchComments('8xf0y6ziyjabvozdd253nd').then(d => console.log('fetchComments', d))
-    // fetchCategories().then(d => console.log('fetchCategories', d))
-    // fetchPosts().then(d => console.log('fetchPosts', d))
-    // fetchPosts('/redux').then(d => console.log('fetchPosts', d))
     const { categories } = this.props
     if(categories.length === 0){
       this.props.getCategories()
@@ -68,9 +67,20 @@ class HomeRoute extends Component {
     }
   }
   
+  onSortChange = (sort) => {
+    this.props.setSort(
+      sort === ALPHA.type
+        ? ALPHA
+        : sort === DATE.type
+        ? DATE
+        : RATING
+    )
+  }
+  
   render () {
-    const { categories, posts, goto } = this.props
+    const { categories, posts, goto, sort } = this.props
     const { settings } = this.state
+    const sortOptions = [ALPHA, DATE, RATING]
     
     return (
       <div className="app">
@@ -92,9 +102,11 @@ class HomeRoute extends Component {
             {posts.map(p => <Article {...p} key={`card_${p.id}`} onClick={()=>goto(`/${p.category}/${p.id}`)}/>)}
           </CardContainer>
         </Page>
-        {settings && <Drawer onClick={() => this.toggle('settings')}>
-          Settings
-        </Drawer>
+        {settings &&
+          <Drawer onClick={() => this.toggle('settings')}>
+            Sort By:
+            {sortOptions.map(({type}) => <Radio key={`radio_${type}`} checked={sort==type} onChange={this.onSortChange}>{type}</Radio>)}
+          </Drawer>
         }
       </div>
     )
@@ -111,12 +123,22 @@ class HomeRoute extends Component {
 const mapDispatchToProps = {
   getCategories,
   getPosts,
-  goto: push
+  setSort,
+  goto: push,
 }
 
-const mapStateToProps = state => ({
-  categories: state.categories,
-  posts: state.posts
-})
+const mapStateToProps = state => {
+  const type = state.sort.type
+  return {
+    categories: state.categories,
+    sort: state.sort.type,
+    posts: state.posts
+      .sort(type === ALPHA.type
+        ? alphaSort
+        : type === DATE.type
+        ? dateSort
+        : ratingSort)
+  }
+}
 
 export default connect(mapStateToProps, mapDispatchToProps)(HomeRoute)

@@ -15,3 +15,8 @@ Users will also be able to edit and delete posts and comments.
   yarn test      // runs unit tests
   yarn build     // builds production release
 ```
+
+### Resources
+[multimedia-collection](https://www.flaticon.com/packs/multimedia-collection)
+
+[i-interface-14](https://www.flaticon.com/packs/ui-interface-14)
