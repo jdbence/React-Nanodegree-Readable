@@ -10,8 +10,8 @@ import Drawer from 'components/ui/drawer'
 import {Link} from 'react-router-dom'
 import { dash } from 'utils/StringUtil'
 import { alphaSort, dateSort, ratingSort } from 'utils/ArrayUtil'
-import { getCategories } from 'modules/CategoryModule'
-import { getPosts } from 'modules/PostModule'
+import { fetchCategories } from 'modules/CategoryModule'
+import { fetchPosts } from 'modules/PostModule'
 import { push } from 'react-router-redux'
 import settingsIcon from 'static/icon/settings.svg'
 import {setSort, ALPHA, DATE, RATING} from 'modules/SortModule'
@@ -60,21 +60,11 @@ class HomeRoute extends Component {
   }
   
   componentDidMount() {
-    const { categories } = this.props
+    const { categories, fetchCategories, fetchPosts } = this.props
     if(categories.length === 0){
-      this.props.getCategories()
-      this.props.getPosts()
+      fetchCategories()
+      fetchPosts()
     }
-  }
-  
-  onSortChange = (sort) => {
-    this.props.setSort(
-      sort === ALPHA.type
-        ? ALPHA
-        : sort === DATE.type
-        ? DATE
-        : RATING
-    )
   }
   
   render () {
@@ -112,6 +102,16 @@ class HomeRoute extends Component {
     )
   }
   
+  onSortChange = (sort) => {
+    this.props.setSort(
+      sort === ALPHA.type
+        ? ALPHA
+        : sort === DATE.type
+        ? DATE
+        : RATING
+    )
+  }
+  
   toggle = (prop) => {
     this.setState({
       ...this.state,
@@ -121,8 +121,8 @@ class HomeRoute extends Component {
 }
 
 const mapDispatchToProps = {
-  getCategories,
-  getPosts,
+  fetchCategories,
+  fetchPosts,
   setSort,
   goto: push,
 }

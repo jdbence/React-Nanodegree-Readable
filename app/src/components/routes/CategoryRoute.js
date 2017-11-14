@@ -8,7 +8,7 @@ import Article from 'components/ui/article'
 import {IconButton} from 'components/ui/button'
 import Radio from 'components/ui/radio'
 import { push, goBack } from 'react-router-redux'
-import { getPosts } from 'modules/PostModule'
+import { fetchPosts } from 'modules/PostModule'
 import { capitalize } from 'utils/StringUtil'
 import { alphaSort, dateSort, ratingSort } from 'utils/ArrayUtil'
 import backIcon from 'static/icon/arrow-back.svg'
@@ -17,8 +17,6 @@ import {setSort, ALPHA, DATE, RATING} from 'modules/SortModule'
 
 const CardContainer = styled.div`
   display: flex;
-  padding-left: 16px;
-  padding-right: 16px;
   flex-wrap: wrap;
   justify-content: space-evenly;
 `
@@ -30,21 +28,11 @@ class CategoryRoute extends Component {
   }
   
   componentDidMount(){
-    const { posts, match } = this.props
+    const { posts, match, fetchPosts } = this.props
     const category = match.params.category
     if(posts.length === 0){
-      this.props.getPosts(category)
+      fetchPosts(category)
     }
-  }
-  
-  onSortChange = (sort) => {
-    this.props.setSort(
-      sort === ALPHA.type
-        ? ALPHA
-        : sort === DATE.type
-        ? DATE
-        : RATING
-    )
   }
   
   render () {
@@ -75,6 +63,16 @@ class CategoryRoute extends Component {
     )
   }
   
+  onSortChange = (sort) => {
+    this.props.setSort(
+      sort === ALPHA.type
+        ? ALPHA
+        : sort === DATE.type
+        ? DATE
+        : RATING
+    )
+  }
+  
   toggle = (prop) => {
     this.setState({
       ...this.state,
@@ -84,7 +82,7 @@ class CategoryRoute extends Component {
 }
 
 const mapDispatchToProps = {
-  getPosts,
+  fetchPosts,
   goBack,
   setSort,
   goto: push

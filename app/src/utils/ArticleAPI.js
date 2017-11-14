@@ -9,7 +9,7 @@ const headers = {
   'Authorization': token
 }
 
-export const fetchCategories = () => {
+export const fetchCategoriesAPI = () => {
   const options = { headers }
   return fetch(`${api}/categories`, options)
     .then(res => res.json())
@@ -17,21 +17,21 @@ export const fetchCategories = () => {
     .catch(err => console.error(err))
 }
 
-export const fetchComments = (id) => {
+export const fetchCommentsAPI = (id) => {
   const options = { headers }
   return fetch(`${api}/posts/${id}/comments`, options)
     .then(res => res.json())
     .catch(err => console.error(err))
 }
 
-export const fetchPosts = (category) => {
+export const fetchPostsAPI = (category) => {
   const options = { headers }
   return fetch(`${api + (category ? `/${category}` : '')}/posts`, options)
     .then(res => res.json())
     .catch(err => console.error(err))
 }
 
-export const createPost = async ({id, timestamp, title, author, body, category}) => {
+export const createPostAPI = async ({id, timestamp, title, author, body, category}) => {
   const options = {
     method: 'POST',
     headers,
@@ -55,7 +55,7 @@ export const createPost = async ({id, timestamp, title, author, body, category})
   }
 }
 
-export const updatePost = async ({ id, title, body }) => {
+export const updatePostAPI = async ({ id, title, body }) => {
   const options = {
     method: 'PUT',
     headers,
@@ -73,7 +73,7 @@ export const updatePost = async ({ id, title, body }) => {
   }
 }
 
-export const deletePost = async (id) => {
+export const deletePostAPI = async (id) => {
   const options = {
     method: 'DELETE',
     headers
@@ -87,7 +87,7 @@ export const deletePost = async (id) => {
   }
 }
 
-export const createComment = async ({id, body, author, parentId, timestamp}) => {
+export const createCommentAPI = async ({id, body, author, parentId, timestamp}) => {
   const options = {
     method: 'POST',
     headers,
@@ -109,7 +109,7 @@ export const createComment = async ({id, body, author, parentId, timestamp}) => 
   }
 }
 
-export const updateComment = async ({ id, timestamp, body }) => {
+export const updateCommentAPI = async ({ id, timestamp, body }) => {
   const options = {
     method: 'PUT',
     headers,
@@ -127,7 +127,7 @@ export const updateComment = async ({ id, timestamp, body }) => {
   }
 }
 
-export const deleteComment = async (id) => {
+export const deleteCommentAPI = async (id) => {
   const options = {
     method: 'DELETE',
     headers

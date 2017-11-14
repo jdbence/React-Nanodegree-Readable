@@ -1,35 +1,49 @@
 import { createAction, handleActions } from 'redux-actions'
-import { fetchPosts } from 'utils/ArticleAPI'
+import { fetchPostsAPI, deletePostAPI, updatePostAPI } from 'utils/ArticleAPI'
 import { uniqueArray } from 'utils/ArrayUtil'
 
 // Constants
-const ADD_POST = 'ADD_POST@Readable'
-const REMOVE_POST = 'REMOVE_POST@Readable'
-const SET_POSTS = 'SET_POSTS@Readable'
+const CREATE_POST = 'CREATE_POST@Readable'
+const DELETE_POST = 'DELETE_POST@Readable'
+const FETCH_POSTS = 'FETCH_POSTS@Readable'
+const UPDATE_POST = 'UPDATE_POST@Readable'
 
 // Actions
-export const addPost = createAction(ADD_POST)
-export const removePost = createAction(REMOVE_POST)
-const setPosts = createAction(SET_POSTS)
+export const createPost = createAction(CREATE_POST)
+const deletePostComplete = createAction(DELETE_POST)
+const fetchPostsComplete = createAction(FETCH_POSTS)
+const updatePostComplete = createAction(UPDATE_POST)
 
-export function getPosts(category) {
-  return dispatch => fetchPosts(category)
-    .then(d => dispatch(setPosts(d)))
+export function fetchPosts(category) {
+  return dispatch => fetchPostsAPI(category)
+    .then(d => dispatch(fetchPostsComplete(d)))
+}
+
+export function deletePost(id) {
+  return dispatch => deletePostAPI(id)
+    .then(() => dispatch(deletePostComplete(id)))
+}
+
+export function updatePost(post) {
+  return dispatch => updatePostAPI(post)
+    .then(() => console.log('updatePost', post))
+    .then(() => dispatch(updatePostComplete(post)))
 }
 
 export const actions = {
-  addPost,
-  removePost,
-  getPosts
+  createPost,
+  deletePost,
+  fetchPosts
 }
 
 const initialState = []
 
 export default handleActions(
   {
-    [SET_POSTS]: (state, { payload }) => uniqueArray([...state, ...payload]),
-    [ADD_POST]: (state, { payload }) => [...state, payload],
-    [REMOVE_POST]: (state, { payload }) => state.filter(item => item.id !== payload.id)
+    [FETCH_POSTS]: (state, { payload }) => uniqueArray([...state, ...payload]),
+    [CREATE_POST]: (state, { payload }) => [...state, payload],
+    [DELETE_POST]: (state, { payload }) => state.filter(item => item.id !== payload),
+    [UPDATE_POST]: (state, { payload }) => state.map((e) => e.id === payload.id ? {...e, ...payload} : e)
   },
   initialState
 )
