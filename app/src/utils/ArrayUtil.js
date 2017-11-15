@@ -10,6 +10,7 @@ export const uniqueArray = (array, prop='id') => {
 }
 
 export const alphaSort = (a, b) => {
+  console.log('alphaSort', a, b)
   let aT = a.title.toLowerCase();
   let bT = b.title.toLowerCase();
   return aT < bT ? (aT > bT ? -1 : 0) : 1;

@@ -7,5 +7,11 @@ const Page = styled.main`
   width: 100%;
   margin: 0 auto;
   flex: 1;
+  ${props => props.row
+    ? `
+      flex-direction: row;
+      display: flex;
+      `
+    : ''}
 `
 export default Page

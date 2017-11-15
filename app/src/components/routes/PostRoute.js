@@ -4,7 +4,7 @@ import {connect} from 'react-redux'
 import {Header, HeaderContent} from 'components/ui/header'
 import Page from 'components/ui/page'
 import {IconButton} from 'components/ui/button'
-import {MissingTitle} from 'components/ui/modal'
+import {MissingTitleModal} from 'components/ui/modal'
 import SwipeableViews from 'react-swipeable-views'
 import { goBack } from 'react-router-redux'
 import { fetchPosts, deletePost, updatePost } from 'modules/PostModule'
@@ -29,17 +29,8 @@ const styles = {
   slide: {
     padding: 15,
     minHeight: 100,
-    color: '#fff',
-  },
-  slide0: {
-    background: '#FEA900',
-  },
-  slide1: {
-    background: '#B3DC4A',
-  },
-  slide2: {
-    background: '#6AC0FF',
-  },
+    background: '#fff',
+  }
 };
 const temppostSource = `
   # react-markings
@@ -125,7 +116,7 @@ class PostRoute extends Component {
             : <CardsView source={postSource} onChange={this.updatePostIndex} posts={posts} index={postIndex} />
           }
         </Page>
-        { missingTitle && <MissingTitle onAddTitle={() => this.addTitle()} onClose={() => this.toggle(MISSING_TITLE)}/> }
+        { missingTitle && <MissingTitleModal onAddTitle={() => this.addTitle()} onClose={() => this.toggle(MISSING_TITLE)}/> }
       </div>
     )
   }
@@ -171,10 +162,10 @@ class PostRoute extends Component {
   // articles have to be removed locally and remotely
   // after removal, go back to the previous page
   removeArticle = () => {
-    const {posts, removePost, goBack} = this.props
+    const {posts, deletePost, goBack} = this.props
     const {postIndex} = this.state
     const id = posts[postIndex].id
-    removePost(id)
+    deletePost(id)
     this.toggle(EDIT)
     goBack()
   }
@@ -185,8 +176,6 @@ class PostRoute extends Component {
     const id = posts[postIndex].id
     const title = getTitle(postSource)
     if(title){
-      //TODO: Save article and title seperately
-      console.log('saveArticle', {id, title: title.text, body: postSource})
       updatePost({id, title: title.text, body: postSource})
       this.toggle(EDIT);
     } else {

@@ -1,8 +1,8 @@
 import React, {Component} from 'react'
 import {Provider} from 'react-redux'
-import {Route} from 'react-router'
+import {Switch,Route} from 'react-router'
 import {ConnectedRouter} from 'react-router-redux'
-import {HomeRoute, PostRoute, CategoryRoute} from 'components/routes'
+import {HomeRoute, PostRoute, CategoryRoute, CreateRoute} from 'components/routes'
 import store, {history} from './store'
 
 class App extends Component {
@@ -10,11 +10,12 @@ class App extends Component {
     return (
       <Provider store={store}>
         <ConnectedRouter history={history}>
-          <div>
+          <Switch>
             <Route path="/" exact component={HomeRoute} />
+            <Route path="/create" exact component={CreateRoute} />
             <Route path="/:category" exact component={CategoryRoute} />
-            <Route path="/:category/:post_id" exact component={PostRoute} />
-          </div>
+            <Route path="/:category/:post_id" component={PostRoute} />
+          </Switch>
         </ConnectedRouter>
       </Provider>
     )

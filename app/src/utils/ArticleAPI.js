@@ -6,7 +6,8 @@ if (!token)
   token = localStorage.token = Math.random().toString(36).substr(-8)
 
 const headers = {
-  'Authorization': token
+  'Authorization': token,
+  'Content-Type': 'application/json',
 }
 
 export const fetchCategoriesAPI = () => {

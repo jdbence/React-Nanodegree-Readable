@@ -3,8 +3,10 @@ import styled from 'styled-components'
 import Card from 'components/ui/card'
 import Image from 'components/ui/image'
 import {Avatar, AvatarDesc} from 'components/ui/avatar'
-import { capitalize, dateStamp} from 'utils/StringUtil'
+import { capitalize, color, dateStamp} from 'utils/StringUtil'
 import {default as ellipsis} from 'components/mixin/ellipsis'
+import getImage from 'get-md-image';
+import md from 'commonmark-helpers';
 
 const CardBody = styled.div.attrs({
   size: props => props.size || 16,
@@ -45,16 +47,20 @@ const AvatarContainer = styled.div`
   display: flex;
 `
 const Article = ({id, img, title, body, author, timestamp, onClick}) => {
+  // get image if one exists
+  img = getImage(body)
+  // strip markdown to show plain text
+  body = md.text(md.matchRemove(body, md.isHeader)).slice(0, 100) + '...'
   return (
     <Card onClick={onClick} query={CardQuery} height={280} maxWidth={500}>
-      <Image href={img} className="image" />
+      <Image href={img && img.src} className="image" />
       <CardBody>
         <div>
           <h3>{title}</h3>
           <p>{body}</p>
         </div>
         <AvatarContainer>
-          <Avatar>{capitalize(author[0])}</Avatar>
+          <Avatar color={color(author)}>{capitalize(author[0])}</Avatar>
           <AvatarDesc>
             <p>{author}</p>
             <p>{dateStamp(timestamp)}</p>

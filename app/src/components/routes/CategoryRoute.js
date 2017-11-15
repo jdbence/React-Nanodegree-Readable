@@ -7,13 +7,15 @@ import Drawer from 'components/ui/drawer'
 import Article from 'components/ui/article'
 import {IconButton} from 'components/ui/button'
 import Radio from 'components/ui/radio'
+import Empty from 'components/ui/empty'
 import { push, goBack } from 'react-router-redux'
 import { fetchPosts } from 'modules/PostModule'
+import {setSort, ALPHA, DATE, RATING} from 'modules/SortModule'
 import { capitalize } from 'utils/StringUtil'
 import { alphaSort, dateSort, ratingSort } from 'utils/ArrayUtil'
 import backIcon from 'static/icon/arrow-back.svg'
 import settingsIcon from 'static/icon/settings.svg'
-import {setSort, ALPHA, DATE, RATING} from 'modules/SortModule'
+import newPostIcon from 'static/icon/newspaper.svg'
 
 const CardContainer = styled.div`
   display: flex;
@@ -46,12 +48,14 @@ class CategoryRoute extends Component {
         <Header>
           <IconButton src={backIcon} alt="back" onClick={goBack}/>
           <HeaderContent>{capitalize(category)}</HeaderContent>
+          <IconButton src={newPostIcon} alt="New Post" onClick={()=>goto(`/create`)}/>
           <IconButton src={settingsIcon} alt="settings" onClick={() => this.toggle('settings')}/>
         </Header>
         <Page>
           <CardContainer>
             {posts.map(p => <Article {...p} key={`card_${p.id}`} onClick={()=>goto(`/${p.category}/${p.id}`)}/>)}
           </CardContainer>
+          {posts.length === 0 && <Empty/>}
         </Page>
         {settings &&
           <Drawer onClick={() => this.toggle('settings')}>

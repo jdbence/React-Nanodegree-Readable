@@ -13,7 +13,7 @@ export const actions = {
 export const ALPHA = {type: 'Az'}
 export const DATE = {type: 'Date'}
 export const RATING = {type: 'Rating'}
-const initialState = ALPHA
+const initialState = DATE
 
 export default handleActions(
   {

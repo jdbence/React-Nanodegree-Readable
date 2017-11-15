@@ -7,7 +7,7 @@ const Avatar = styled.div`
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: rgb(70, 121, 255);
+  background-color: ${props => props.color || 'rgb(70, 121, 255)'};
   color: white;
   font-size: 20px;
 `
