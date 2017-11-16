@@ -88,6 +88,23 @@ export const deletePostAPI = async (id) => {
   }
 }
 
+export const votePostAPI = async ({ id, option }) => {
+  const options = {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      option
+    })
+  }
+  try {
+    const res = await fetch(`${api}/posts/${id}`, options)
+    return res.json()
+  }
+  catch (err) {
+    console.error(err)
+  }
+}
+
 export const createCommentAPI = async ({id, body, author, parentId, timestamp}) => {
   const options = {
     method: 'POST',

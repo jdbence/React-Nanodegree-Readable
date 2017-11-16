@@ -11,6 +11,7 @@ const defaultData = {
     body: 'Hi there! I am a COMMENT.',
     author: 'thingtwo',
     voteScore: 6,
+    voted: false,
     deleted: false,
     parentDeleted: false
   },
@@ -21,6 +22,7 @@ const defaultData = {
     body: 'Comments. Are. Cool.',
     author: 'thingone',
     voteScore: -5,
+    voted: false,
     deleted: false,
     parentDeleted: false
   }
@@ -66,6 +68,7 @@ function add (token, comment) {
       parentId: comment.parentId,
       voteScore: 1,
       deleted: false,
+      voted: false,
       parentDeleted: false
     }
 
@@ -77,13 +80,15 @@ function add (token, comment) {
 function vote (token, id, option) {
   return new Promise((res) => {
     let comments = getData(token)
-    comment = comments[id]
+    let comment = comments[id]
     switch(option) {
         case "upVote":
             comment.voteScore = comment.voteScore + 1
+            comment.voted = true
             break
         case "downVote":
-            comment.voteScore = comment.voteScore - 1
+            comment.voteScore = Math.max(0, comment.voteScore - 1)
+            comment.voted = false
             break
         default:
             console.log(`comments.vote received incorrect parameter: ${option}`)

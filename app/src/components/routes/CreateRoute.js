@@ -5,6 +5,7 @@ import {Header, HeaderContent} from 'components/ui/header'
 import Page from 'components/ui/page'
 import {IconButton} from 'components/ui/button'
 import {MissingTitleModal, CreateArticleModal} from 'components/ui/modal'
+import SwipeableViews from 'react-swipeable-views'
 import { goBack } from 'react-router-redux'
 import { ALPHA, DATE, RATING} from 'modules/SortModule'
 import { createPost } from 'modules/PostModule'
@@ -16,6 +17,7 @@ import { rnd } from 'utils/StringUtil'
 import saveIcon from 'static/icon/upload.svg'
 import cancelIcon from 'static/icon/cancel.svg'
 
+const RESIZE_WAIT = 400;
 const MISSING_TITLE = 'missingTitle';
 const EDIT = 'edit';
 const CREATE = 'create';
@@ -36,10 +38,28 @@ const Preview = styled.div`
   flex: 1;
   background-color: white;
   border-left: 1px solid #eee;
+  width: 100%;
   & > div {
     padding: 0 10px;
   }
+  & img {
+    max-width: 100%;
+    height: auto;
+  }
 `
+
+const styles = {
+  slide: {
+    display: 'flex'
+  },
+  container: {
+    paddingTop: 56,
+    width: '100%',
+    flex: 1,
+    flexDirection: 'row',
+    display: 'flex'
+  }
+}
 
 class CreateRoute extends Component {
   
@@ -48,14 +68,31 @@ class CreateRoute extends Component {
     create: false,
     missingTitle: false,
     postSource: exampleSource,
-    category: 'react'
+    category: 'react',
+    windowWidth: 1000,
+    pageIndex: 0
+  }
+  
+  componentWillMount(){
+    this.lastWindowEvent = 0
+    window.addEventListener('resize', this.onResize, false)
+  }
+  
+  componentWillUnmount(){
+    clearTimeout(this.windowTimeout)
+    window.removeEventListener('resize', this.onResize)
+  }
+  
+  componentDidMount(){
+    this.onResize(null, false);
   }
   
   render () {
     const { goBack } = this.props
-    const { postSource, missingTitle, create, category } = this.state
+    const { postSource, missingTitle, create, category, windowWidth, pageIndex } = this.state
     const options =  { mode: 'markdown', lineNumbers: true, safe: true}
     const categories = ['react', 'redux', 'udacity']
+    const isMobile = windowWidth < 1000
     return (
       <div className="app">
         <Header>
@@ -63,19 +100,56 @@ class CreateRoute extends Component {
           New Article
           <Dropdown options={categories} onChange={this.onSelectCategory} value={category} placeholder="" />
           </HeaderContent>
-          <IconButton src={saveIcon} alt="save" onClick={() => this.toggle(CREATE)}/>
+          <IconButton src={saveIcon} alt="save" onClick={this.checkArticle}/>
           <IconButton src={cancelIcon} alt="cancel" onClick={goBack}/>
         </Header>
-        <Page row={true}>
-          <CodeMirror value={postSource} onBeforeChange={this.updatePost} options={options} className={'mdPost'}/>
-          <Preview>
-            {md([postSource])}
-          </Preview>
-        </Page>
+        { isMobile &&
+          <SwipeableViews enableMouseEvents index={pageIndex} onChangeIndex={this.updatePageIndex} style={styles.container} slideStyle={styles.slide}>
+            <CodeMirror value={postSource} onBeforeChange={this.updatePost} options={options} className={'mdPostFull'}/>
+            <Preview>
+              {md([postSource])}
+            </Preview>
+          </SwipeableViews>
+        }
+        { !isMobile &&
+          <Page row={true}>
+            <CodeMirror value={postSource} onBeforeChange={this.updatePost} options={options} className={'mdPost'}/>
+            <Preview>
+              {md([postSource])}
+            </Preview>
+          </Page>
+        }
         { create && <CreateArticleModal onCreate={this.createArticle} onClose={() => this.toggle(CREATE)}/> }
         { missingTitle && <MissingTitleModal onAddTitle={() => this.addTitle()} onClose={() => this.toggle(MISSING_TITLE)}/> }
       </div>
     )
+  }
+  
+  onResize = (e, wait=true) => {
+    const windowWidth = window.innerWidth ||
+        document.documentElement.clientWidth ||
+        document.body.clientWidth
+    const now = new Date().getTime()
+    if(wait && now - this.lastWindowEvent < RESIZE_WAIT){
+      clearTimeout(this.windowTimeout)
+      this.windowTimeout = setTimeout(()=>{
+        this.lastWindowEvent = new Date().getTime()
+        this.setState({
+          windowWidth
+        })
+      }, 200)
+    } else {
+      this.lastWindowEvent = now
+      this.setState({
+        windowWidth
+      })
+    }
+  }
+  
+  updatePageIndex = (pageIndex) => {
+    this.setState({
+      pageIndex
+		})
   }
   
   updatePost = (editor, data, value) => {
@@ -83,6 +157,16 @@ class CreateRoute extends Component {
       ...this.state,
 			postSource: value,
 		})
+  }
+  
+  checkArticle = () => {
+    const {postSource} = this.state
+    const title = getTitle(postSource)
+    if(title){
+      this.toggle(CREATE)
+    } else {
+      this.toggle(MISSING_TITLE)
+    }
   }
   
   createArticle = (author) => {
@@ -99,8 +183,6 @@ class CreateRoute extends Component {
         category
       })
       goBack()
-    } else {
-      this.toggle(MISSING_TITLE)
     }
   }
   

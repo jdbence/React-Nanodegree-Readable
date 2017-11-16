@@ -11,6 +11,7 @@ const defaultData = {
     author: 'thingtwo',
     category: 'react',
     voteScore: 6,
+    voted: true,
     deleted: false,
     commentCount: 2
   },
@@ -22,6 +23,7 @@ const defaultData = {
     author: 'thingtwo',
     category: 'react',
     voteScore: 6,
+    voted: true,
     deleted: false,
     commentCount: 0
   },
@@ -33,6 +35,7 @@ const defaultData = {
     author: 'thingone',
     category: 'redux',
     voteScore: -5,
+    voted: false,
     deleted: false,
     commentCount: 0
   }
@@ -86,7 +89,8 @@ function add (token, post) {
       body: post.body,
       author: post.author,
       category: post.category,
-      voteScore: 1,
+      voteScore: 0,
+      voted: false,
       deleted: false,
       commentCount: 0
     }
@@ -98,13 +102,15 @@ function add (token, post) {
 function vote (token, id, option) {
   return new Promise((res) => {
     let posts = getData(token)
-    post = posts[id]
+    let post = posts[id]
     switch(option) {
         case "upVote":
             post.voteScore = post.voteScore + 1
+            post.voted = true
             break
         case "downVote":
-            post.voteScore = post.voteScore - 1
+            post.voteScore = Math.max(0, post.voteScore - 1)
+            post.voted = false
             break
         default:
             console.log(`posts.vote received incorrect parameter: ${option}`)

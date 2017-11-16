@@ -12,7 +12,7 @@ import {Link} from 'react-router-dom'
 import { dash } from 'utils/StringUtil'
 import { alphaSort, dateSort, ratingSort } from 'utils/ArrayUtil'
 import { fetchCategories } from 'modules/CategoryModule'
-import { fetchPosts } from 'modules/PostModule'
+import { fetchPosts, votePost } from 'modules/PostModule'
 import {setSort, ALPHA, DATE, RATING} from 'modules/SortModule'
 import { push } from 'react-router-redux'
 import settingsIcon from 'static/icon/settings.svg'
@@ -92,7 +92,7 @@ class HomeRoute extends Component {
             </CategoriesInner>
           </Categories>
           <CardContainer>
-            {posts.map(p => <Article {...p} key={`card_${p.id}`} onClick={()=>goto(`/${p.category}/${p.id}`)}/>)}
+            {posts.map(p => <Article {...p} key={`card_${p.id}`} onLike={()=>this.onLike(p.id)} onClick={()=>goto(`/${p.category}/${p.id}`)}/>)}
           </CardContainer>
           {posts.length === 0 && <Empty/>}
         </Page>
@@ -104,6 +104,14 @@ class HomeRoute extends Component {
         }
       </div>
     )
+  }
+  
+  onLike = (id) => {
+    const { posts, votePost } = this.props
+    const post = posts.find(p => p.id === id)
+    if(post){
+      votePost(id, post.voted ? 'downVote' : 'upVote')
+    }
   }
   
   onSortChange = (sort) => {
@@ -127,6 +135,7 @@ class HomeRoute extends Component {
 const mapDispatchToProps = {
   fetchCategories,
   fetchPosts,
+  votePost,
   setSort,
   goto: push,
 }

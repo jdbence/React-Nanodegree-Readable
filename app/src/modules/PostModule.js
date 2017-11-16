@@ -1,5 +1,5 @@
 import { createAction, handleActions } from 'redux-actions'
-import { fetchPostsAPI, createPostAPI, deletePostAPI, updatePostAPI } from 'utils/ArticleAPI'
+import { fetchPostsAPI, createPostAPI, deletePostAPI, updatePostAPI, votePostAPI } from 'utils/ArticleAPI'
 import { uniqueArray } from 'utils/ArrayUtil'
 
 // Constants
@@ -34,9 +34,16 @@ export function updatePost(post) {
     .then(() => dispatch(updatePostComplete(post)))
 }
 
+export function votePost(id, option){
+  return dispatch => votePostAPI({id, option})
+    .then((post) => dispatch(updatePostComplete(post)))
+}
+
 export const actions = {
   createPost,
   deletePost,
+  updatePost,
+  votePost,
   fetchPosts
 }
 
