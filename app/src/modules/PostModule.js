@@ -16,7 +16,7 @@ const updatePostComplete = createAction(UPDATE_POST)
 
 export function fetchPosts(category) {
   return dispatch => fetchPostsAPI(category)
-    .then(d => dispatch(fetchPostsComplete(d)))
+    .then(posts => dispatch(fetchPostsComplete(posts)))
 }
 
 export function createPost(post){
@@ -36,7 +36,7 @@ export function updatePost(post) {
 
 export function votePost(id, option){
   return dispatch => votePostAPI({id, option})
-    .then((post) => dispatch(updatePostComplete(post)))
+    .then(post => dispatch(updatePostComplete(post)))
 }
 
 export const actions = {

@@ -158,3 +158,20 @@ export const deleteCommentAPI = async (id) => {
     console.error(err)
   }
 }
+
+export const voteCommentAPI = async ({ id, option }) => {
+  const options = {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      option
+    })
+  }
+  try {
+    const res = await fetch(`${api}/comments/${id}`, options)
+    return res.json()
+  }
+  catch (err) {
+    console.error(err)
+  }
+}

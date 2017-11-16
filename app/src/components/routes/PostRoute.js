@@ -4,13 +4,15 @@ import {connect} from 'react-redux'
 import {Header, HeaderContent} from 'components/ui/header'
 import Page from 'components/ui/page'
 import {IconButton} from 'components/ui/button'
+import Empty from 'components/ui/empty'
 import {MissingTitleModal} from 'components/ui/modal'
 import SwipeableViews from 'react-swipeable-views'
 import { goBack } from 'react-router-redux'
 import { fetchPosts, deletePost, updatePost } from 'modules/PostModule'
+import { fetchComments } from 'modules/CommentsModule'
 import { ALPHA, DATE, RATING} from 'modules/SortModule'
 import { capitalize } from 'utils/StringUtil'
-import { alphaSort, dateSort, ratingSort } from 'utils/ArrayUtil'
+import { postSort, postFilter } from 'utils/ArrayUtil'
 import md from 'react-markings'
 import getTitle from 'get-md-title';
 import {Controlled as CodeMirror} from 'react-codemirror2'
@@ -32,21 +34,22 @@ const styles = {
     background: '#fff',
   }
 };
-const temppostSource = `
-  # react-markings
-  > Markdown in components, components in markdown
 
-  - Allows you to write markdown using [commonmark.js](https://github.com/commonmark/commonmark.js)
-  - Renders markdown as React elements using [commonmark-react-renderer](https://github.com/rexxars/commonmark-react-renderer)
-  - Embed React components inside your markdown (in any paragraph position) like this:
+const Comment = styled.div`
+  padding: 10px;
+  border: 1px solid #ddd;
 `
 
-
-const CardsView = ({posts, source, index, onChange}) => (
+const CardsView = ({posts, comments, source, index, onChange}) => (
   <SwipeableViews enableMouseEvents slideStyle={styles.slideContainer} index={index} onChangeIndex={onChange}>
-    {posts.map((p,i) =>
-    <div key={`card_${p.id}`} style={{...styles.slide, ...styles[`slide${i}`]}}>
+    {posts.map(p =>
+    <div key={`card_${p.id}`} style={{...styles.slide}}>
       {md([p.body])}
+      {
+        comments
+        .filter(c => c.parentId == p.id)
+        .map(c => <Comment key={`comment_${c.id}`} {...c}>{c.body}</Comment>)
+      }
     </div>)}
   </SwipeableViews>
 );
@@ -54,7 +57,7 @@ const CardsView = ({posts, source, index, onChange}) => (
 class PostRoute extends Component {
   
   state = {
-    postSource: temppostSource,
+    postSource: '',
     postIndex: -1,
     edit: false,
     missingTitle: false
@@ -69,25 +72,27 @@ class PostRoute extends Component {
   }
   
   componentWillMount(){
-    const { posts, match} = this.props
+    const { posts, match, fetchComments} = this.props
     // find the index of the post
     if(this.state.postIndex === -1 && posts.length > 0){
       const id = match.params.post_id
       this.updatePostIndex(posts.findIndex(e => e.id === id) || 0)
+      fetchComments(id)
     }
   }
   
   componentWillReceiveProps(nextProps){
-    const { posts, match} = nextProps
+    const { posts, match, fetchComments} = nextProps
     // find the index of the post after posts loaded
     if(this.state.postIndex === -1 && posts.length > 0){
       const id = match.params.post_id
-      this.updatePostIndex(posts.findIndex(e => e.id === id) || 0)
+      this.updatePostIndex(posts.findIndex(e => e.id === id) || 0, false)
+      fetchComments(id)
     }
   }
   
   render () {
-    const { posts, match, goBack } = this.props
+    const { posts, comments, match, goBack } = this.props
     const { postSource, edit, missingTitle, postIndex } = this.state
     const category = match.params.category
     const options =  { mode: 'markdown'}
@@ -110,10 +115,10 @@ class PostRoute extends Component {
         <Page>
           {
             posts.length === 0
-            ? <div> Loading </div>
+            ? <Empty/>
             : edit
             ? <CodeMirror value={postSource} onBeforeChange={this.updatePost} options={options} />
-            : <CardsView source={postSource} onChange={this.updatePostIndex} posts={posts} index={postIndex} />
+            : <CardsView onChange={this.onChangePage} posts={posts} comments={comments} index={postIndex} />
           }
         </Page>
         { missingTitle && <MissingTitleModal onAddTitle={() => this.addTitle()} onClose={() => this.toggle(MISSING_TITLE)}/> }
@@ -121,7 +126,15 @@ class PostRoute extends Component {
     )
   }
   
-  updatePostIndex = (postIndex) => {
+  onChangePage = index => {
+    const { posts, fetchComments } = this.props
+    this.updatePostIndex(index);
+    if(posts.length > 0 && posts.length >= index){
+      fetchComments(posts[index].id);
+    }
+  }
+  
+  updatePostIndex = postIndex => {
     this.setState({
       ...this.state,
       postIndex
@@ -188,20 +201,19 @@ const mapDispatchToProps = {
   goBack,
   fetchPosts,
   deletePost,
-  updatePost
+  updatePost,
+  fetchComments
 }
 
 const mapStateToProps = state => {
-  const category = state.router.location.pathname.split('/')[1]
-  const type = state.sort.type
+  const {comments, sort, posts, router} = state
+  const category = router.location.pathname.split('/')[1]
+  const type = sort.type
   return {
-    posts: state.posts
-      .filter(item => item.category === category)
-      .sort(type === ALPHA.type
-        ? alphaSort
-        : type === DATE.type
-        ? dateSort
-        : ratingSort)
+    comments,
+    posts: posts
+      .filter(postFilter(category))
+      .sort(postSort(type))
   }
 }
 

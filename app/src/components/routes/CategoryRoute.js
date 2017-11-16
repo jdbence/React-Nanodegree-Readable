@@ -14,7 +14,7 @@ import { fetchPosts, votePost } from 'modules/PostModule'
 import { fetchCategories } from 'modules/CategoryModule'
 import {setSort, ALPHA, DATE, RATING} from 'modules/SortModule'
 import { capitalize, dash } from 'utils/StringUtil'
-import { alphaSort, dateSort, ratingSort } from 'utils/ArrayUtil'
+import { postSort, postFilter } from 'utils/ArrayUtil'
 import backIcon from 'static/icon/arrow-back.svg'
 import settingsIcon from 'static/icon/settings.svg'
 import newPostIcon from 'static/icon/newspaper.svg'
@@ -158,6 +158,8 @@ class CategoryRoute extends Component {
   }
 }
 
+
+
 const mapDispatchToProps = {
   fetchCategories,
   fetchPosts,
@@ -168,20 +170,15 @@ const mapDispatchToProps = {
 }
 
 const mapStateToProps = state => {
-  const category = state.router.location.pathname.split('/')[1]
-  const type = state.sort.type
+  const {categories, sort, posts, router} = state
+  const category = router.location.pathname.split('/')[1]
+  const type = sort.type
   return {
     sort: type,
-    categories: state.categories,
-    posts: state.posts
-      .filter(category.length > 0
-        ? item => item.category === category
-        : () => true)
-      .sort(type === ALPHA.type
-        ? alphaSort
-        : type === DATE.type
-        ? dateSort
-        : ratingSort)
+    categories,
+    posts: posts
+      .filter(postFilter(category))
+      .sort(postSort(type))
   }
 }
 
