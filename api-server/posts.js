@@ -31,10 +31,11 @@ const defaultData = {
     id: '6ni6ok3ym7mf1p33lnez',
     timestamp: 1468479767190,
     title: 'Learn Redux in 10 minutes!',
-    body: 'Just kidding. It takes more than 10 minutes to learn technology.',
+    body: `# It takes more than 10 minutes to learn technology.
+ Just kidding. ![Image](/static/img/redux.png)`,
     author: 'thingone',
     category: 'redux',
-    voteScore: -5,
+    voteScore: 5,
     voted: false,
     deleted: false,
     commentCount: 0

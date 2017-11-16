@@ -4,14 +4,16 @@ import styled from 'styled-components'
 import {Header, HeaderContent} from 'components/ui/header'
 import Page from 'components/ui/page'
 import Drawer from 'components/ui/drawer'
+import {Link} from 'react-router-dom'
 import Article from 'components/ui/article'
 import {IconButton} from 'components/ui/button'
 import Radio from 'components/ui/radio'
 import Empty from 'components/ui/empty'
 import { push, goBack } from 'react-router-redux'
-import { fetchPosts } from 'modules/PostModule'
+import { fetchPosts, votePost } from 'modules/PostModule'
+import { fetchCategories } from 'modules/CategoryModule'
 import {setSort, ALPHA, DATE, RATING} from 'modules/SortModule'
-import { capitalize } from 'utils/StringUtil'
+import { capitalize, dash } from 'utils/StringUtil'
 import { alphaSort, dateSort, ratingSort } from 'utils/ArrayUtil'
 import backIcon from 'static/icon/arrow-back.svg'
 import settingsIcon from 'static/icon/settings.svg'
@@ -22,6 +24,36 @@ const CardContainer = styled.div`
   flex-wrap: wrap;
   justify-content: space-evenly;
 `
+const Categories = styled.div`
+  padding-top: 8px;
+  overflow-x: auto;
+  width: 100%;
+`
+
+const CategoriesInner = styled.div`
+  display: inline-flex;
+`
+
+const Category = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 16px;
+  cursor: pointer;
+  margin: 8px;
+  padding: 0 16px;
+  line-height: 2em;
+  text-transform: uppercase;
+  user-select: none;
+  font-weight: 500;
+  color: white;
+  background-color: red;
+  &:hover {
+    background-color: #ca0000;
+  }
+`
+
+const linkStyle = {textDecoration: 'none', color:'inherit'}
 
 class CategoryRoute extends Component {
   
@@ -30,30 +62,51 @@ class CategoryRoute extends Component {
   }
   
   componentDidMount(){
-    const { posts, match, fetchPosts } = this.props
-    const category = match.params.category
-    if(posts.length === 0){
-      fetchPosts(category)
+    this.checkRemote(this.props)
+  }
+  
+  componentWillReceiveProps(nextProps){
+    const lastCategory = this.props.match.params.category
+    const nextCategory = nextProps.match.params.category
+    if(lastCategory !== nextCategory){
+      this.checkRemote(nextProps)
     }
   }
   
   render () {
-    const { posts, match, goto, goBack, sort } = this.props
-    const category = match.params.category
+    const { categories, posts, match, goto, goBack, sort } = this.props
+    const category = match.params.category || ''
     const { settings } = this.state
     const sortOptions = [ALPHA, DATE, RATING]
+    const isRoot = category.length === 0
     
     return (
       <div className="app">
         <Header>
-          <IconButton src={backIcon} alt="back" onClick={goBack}/>
-          <HeaderContent>{capitalize(category)}</HeaderContent>
+          {!isRoot && <IconButton src={backIcon} alt="back" onClick={goBack}/>}
+          {
+            isRoot
+            ? <HeaderContent padded>Readable</HeaderContent>
+            : <HeaderContent>{capitalize(category)}</HeaderContent>
+          }
           <IconButton src={newPostIcon} alt="New Post" onClick={()=>goto(`/create`)}/>
           <IconButton src={settingsIcon} alt="settings" onClick={() => this.toggle('settings')}/>
         </Header>
         <Page>
+          {
+            isRoot &&
+            <Categories>
+              <CategoriesInner>
+                {categories.map(d => (
+                  <Link key={`category_${d.name}`} to={`/${dash(d.name)}`} style={linkStyle}>
+                    <Category>{d.name}</Category>
+                  </Link>
+                ))}
+              </CategoriesInner>
+            </Categories>
+          }
           <CardContainer>
-            {posts.map(p => <Article {...p} key={`card_${p.id}`} onClick={()=>goto(`/${p.category}/${p.id}`)}/>)}
+            {posts.map(p => <Article {...p} key={`card_${p.id}`} onLike={()=>this.onLike(p.id)} onClick={()=>goto(`/${p.category}/${p.id}`)}/>)}
           </CardContainer>
           {posts.length === 0 && <Empty/>}
         </Page>
@@ -65,6 +118,26 @@ class CategoryRoute extends Component {
         }
       </div>
     )
+  }
+  
+  checkRemote(props){
+    const { posts, categories, match, fetchPosts, fetchCategories } = props
+    const category = match.params.category
+    
+    if(!category && categories.length === 0){
+      fetchCategories()
+      fetchPosts()
+    } else if(posts.length === 0){
+      fetchPosts(category)
+    }
+  }
+  
+  onLike = (id) => {
+    const { posts, votePost } = this.props
+    const post = posts.find(p => p.id === id)
+    if(post){
+      votePost(id, post.voted ? 'downVote' : 'upVote')
+    }
   }
   
   onSortChange = (sort) => {
@@ -86,9 +159,11 @@ class CategoryRoute extends Component {
 }
 
 const mapDispatchToProps = {
+  fetchCategories,
   fetchPosts,
   goBack,
   setSort,
+  votePost,
   goto: push
 }
 
@@ -96,9 +171,12 @@ const mapStateToProps = state => {
   const category = state.router.location.pathname.split('/')[1]
   const type = state.sort.type
   return {
-    sort: state.sort.type,
+    sort: type,
+    categories: state.categories,
     posts: state.posts
-      .filter(item => item.category === category)
+      .filter(category.length > 0
+        ? item => item.category === category
+        : () => true)
       .sort(type === ALPHA.type
         ? alphaSort
         : type === DATE.type

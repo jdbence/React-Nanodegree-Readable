@@ -56,7 +56,7 @@ const Article = ({id, voted=false, voteScore, title, body, author, timestamp, on
     left: 0;
     top: 0;
     &::after { 
-      color: ${voted ? 'red' : 'white'};
+      color: ${voted ? 'red' : 'black'};
       position: absolute;
       content: "${voteScore}";
       bottom: -10px;
@@ -70,7 +70,7 @@ const Article = ({id, voted=false, voteScore, title, body, author, timestamp, on
     <Card onClick={onClick} query={CardQuery} height={280} maxWidth={500}>
       <IconButton buttonStyle={buttonStyle} onClick={(e)=>{e.stopPropagation(); onLike(e);}}>
         {voted && <HeartIcon size="28px" fill='red' border='red' />}
-        {!voted && <HeartOutline size="28px" fill='white' />}
+        {!voted && <HeartOutline size="28px" fill='black' />}
       </IconButton>
       <Image href={img && img.src} className="image" />
       <CardBody>
