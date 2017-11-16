@@ -36,7 +36,7 @@ export function updateComment(comment) {
 
 export function voteComment(id, option){
   return dispatch => voteCommentAPI({id, option})
-    .then(response => dispatch(updateCommentComplete(response.data)))
+    .then(response => dispatch(updateCommentComplete(response)))
 }
 
 export const actions = {

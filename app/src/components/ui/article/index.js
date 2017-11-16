@@ -1,15 +1,13 @@
 import React from 'react'
 import styled from 'styled-components'
 import Card from 'components/ui/card'
-import { IconButton } from 'components/ui/button'
+import { IconButton, ToggleHeart } from 'components/ui/button'
 import Image from 'components/ui/image'
 import {Avatar, AvatarDesc} from 'components/ui/avatar'
 import { capitalize, color, dateStamp} from 'utils/StringUtil'
 import {default as ellipsis} from 'components/mixin/ellipsis'
 import getImage from 'get-md-image'
 import md from 'commonmark-helpers'
-import HeartIcon from 'components/ui/icon/HeartIcon'
-import HeartOutline from 'components/ui/icon/HeartOutline'
 
 const CardBody = styled.div.attrs({
   size: props => props.size || 16,
@@ -68,10 +66,7 @@ const Article = ({id, voted=false, voteScore, title, body, author, timestamp, on
   body = md.text(md.matchRemove(body, md.isHeader)).slice(0, 100) + '...'
   return (
     <Card onClick={onClick} query={CardQuery} height={280} maxWidth={500}>
-      <IconButton buttonStyle={buttonStyle} onClick={(e)=>{e.stopPropagation(); onLike(e);}}>
-        {voted && <HeartIcon size="28px" fill='red' border='red' />}
-        {!voted && <HeartOutline size="28px" fill='black' />}
-      </IconButton>
+      <ToggleHeart onClick={onLike} voted={voted} voteScore={voteScore}/>
       <Image href={img && img.src} className="image" />
       <CardBody>
         <div>

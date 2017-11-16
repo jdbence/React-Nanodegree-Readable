@@ -3,15 +3,16 @@ import styled from 'styled-components'
 import {connect} from 'react-redux'
 import {Header, HeaderContent} from 'components/ui/header'
 import Page from 'components/ui/page'
-import {IconButton} from 'components/ui/button'
+import {IconButton,ToggleHeart} from 'components/ui/button'
+import {Avatar,AvatarDesc} from 'components/ui/avatar'
 import Empty from 'components/ui/empty'
 import {MissingTitleModal} from 'components/ui/modal'
 import SwipeableViews from 'react-swipeable-views'
 import { goBack } from 'react-router-redux'
 import { fetchPosts, deletePost, updatePost } from 'modules/PostModule'
-import { fetchComments } from 'modules/CommentsModule'
+import { fetchComments, voteComment } from 'modules/CommentsModule'
 import { ALPHA, DATE, RATING} from 'modules/SortModule'
-import { capitalize } from 'utils/StringUtil'
+import { color, capitalize, dateStamp } from 'utils/StringUtil'
 import { postSort, postFilter } from 'utils/ArrayUtil'
 import md from 'react-markings'
 import getTitle from 'get-md-title';
@@ -35,21 +36,51 @@ const styles = {
   }
 };
 
+const CommentSection = styled.section`
+  margin: 0 auto;
+  max-width: 700px;
+`
+
 const Comment = styled.div`
   padding: 10px;
   border: 1px solid #ddd;
+  margin-bottom: 10px;
+`
+const CommentFooter = styled.div`
+  padding-top: 10px;
 `
 
-const CardsView = ({posts, comments, source, index, onChange}) => (
+const AvatarContainer = styled.div`
+  display: flex;
+  margin-bottom: 10px;
+`
+
+const CardsView = ({posts, comments, source, index, onChange, onLike}) => (
   <SwipeableViews enableMouseEvents slideStyle={styles.slideContainer} index={index} onChangeIndex={onChange}>
     {posts.map(p =>
     <div key={`card_${p.id}`} style={{...styles.slide}}>
       {md([p.body])}
-      {
-        comments
-        .filter(c => c.parentId == p.id)
-        .map(c => <Comment key={`comment_${c.id}`} {...c}>{c.body}</Comment>)
-      }
+      <CommentSection>
+        Comments
+        {
+          comments
+          .filter(c => c.parentId == p.id)
+          .map(c =>
+          <Comment key={`comment_${c.id}`} {...c}>
+            <AvatarContainer>
+              <Avatar color={color(c.author)}>{capitalize(c.author[0])}</Avatar>
+              <AvatarDesc>
+                <p>{c.author}</p>
+                <p>{dateStamp(c.timestamp)}</p>
+              </AvatarDesc>
+            </AvatarContainer>
+            {c.body}
+            <CommentFooter>
+              <ToggleHeart onClick={()=>onLike(c.id)} voted={c.voted} voteScore={c.voteScore} right/>
+            </CommentFooter>
+          </Comment>)
+        }
+      </CommentSection>
     </div>)}
   </SwipeableViews>
 );
@@ -118,12 +149,20 @@ class PostRoute extends Component {
             ? <Empty/>
             : edit
             ? <CodeMirror value={postSource} onBeforeChange={this.updatePost} options={options} />
-            : <CardsView onChange={this.onChangePage} posts={posts} comments={comments} index={postIndex} />
+            : <CardsView onLike={this.onLike} onChange={this.onChangePage} posts={posts} comments={comments} index={postIndex} />
           }
         </Page>
         { missingTitle && <MissingTitleModal onAddTitle={() => this.addTitle()} onClose={() => this.toggle(MISSING_TITLE)}/> }
       </div>
     )
+  }
+  
+  onLike = (id) => {
+    const { comments, voteComment } = this.props
+    const comment = comments.find(p => p.id === id)
+    if(comment){
+      voteComment(id, comment.voted ? 'downVote' : 'upVote')
+    }
   }
   
   onChangePage = index => {
@@ -202,7 +241,8 @@ const mapDispatchToProps = {
   fetchPosts,
   deletePost,
   updatePost,
-  fetchComments
+  fetchComments,
+  voteComment
 }
 
 const mapStateToProps = state => {
