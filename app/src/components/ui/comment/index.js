@@ -1,1 +1,1 @@
-export {default as EditComment} from './EditComment'
+export { default as EditComment } from './EditComment'

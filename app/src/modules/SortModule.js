@@ -7,12 +7,12 @@ const SET_SORT = 'SET_SORT@Readable'
 export const setSort = createAction(SET_SORT)
 
 export const actions = {
-  setSort,
+  setSort
 }
 
-export const ALPHA = {type: 'Az'}
-export const DATE = {type: 'Date'}
-export const RATING = {type: 'Rating'}
+export const ALPHA = { type: 'Az' }
+export const DATE = { type: 'Date' }
+export const RATING = { type: 'Rating' }
 const initialState = DATE
 
 export default handleActions(

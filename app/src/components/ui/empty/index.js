@@ -13,7 +13,6 @@ const EmptyContainer = styled.div`
   justify-content: space-between;
   opacity: 0.2;
   text-align: center;
-  
 `
 
 const Inner = styled.div`

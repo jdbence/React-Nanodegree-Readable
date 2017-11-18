@@ -1,11 +1,11 @@
 import React from 'react'
 import styled from 'styled-components'
 import Card from 'components/ui/card'
-import { IconButton, ToggleHeart } from 'components/ui/button'
+import { ToggleHeart } from 'components/ui/button'
 import Image from 'components/ui/image'
-import {Avatar, AvatarDesc} from 'components/ui/avatar'
-import { capitalize, color, dateStamp} from 'utils/StringUtil'
-import {default as ellipsis} from 'components/mixin/ellipsis'
+import { Avatar, AvatarDesc } from 'components/ui/avatar'
+import { capitalize, color, dateStamp } from 'utils/StringUtil'
+import { default as ellipsis } from 'components/mixin/ellipsis'
 import getImage from 'get-md-image'
 import md from 'commonmark-helpers'
 
@@ -48,25 +48,14 @@ const AvatarContainer = styled.div`
   display: flex;
 `
 
-const Article = ({id, voted=false, voteScore, title, body, author, timestamp, onClick, onLike}) => {
-  const buttonStyle = `
-    position: absolute;
-    left: 0;
-    top: 0;
-    &::after { 
-      color: ${voted ? 'red' : 'black'};
-      position: absolute;
-      content: "${voteScore}";
-      bottom: -10px;
-    }
-  `
+const Article = ({ id, voted = false, voteScore, title, body, author, timestamp, onClick, onLike }) => {
   // get image if one exists
   const img = getImage(body)
   // strip markdown to show plain text
   body = md.text(md.matchRemove(body, md.isHeader)).slice(0, 100) + '...'
   return (
     <Card onClick={onClick} query={CardQuery} height={280} maxWidth={500}>
-      <ToggleHeart onClick={onLike} voted={voted} voteScore={voteScore}/>
+      <ToggleHeart onClick={onLike} voted={voted} voteScore={voteScore} />
       <Image href={img && img.src} className="image" />
       <CardBody>
         <div>

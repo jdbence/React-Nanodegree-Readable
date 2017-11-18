@@ -1,13 +1,11 @@
-import React from 'react'
 import styled from 'styled-components'
 
 const Card = styled.article`
   display: flex;
-  ${props => props.query}
-  height: ${props => (isNaN(props.height) ? props.height : `${props.height}px`)};
-  max-width: ${props =>(isNaN(props.maxWidth) ? props.maxWidth : `${props.maxWidth}px`)};
-  ${props => props.onClick ? 'cursor: pointer;' : ''}
-  width: ${props =>(isNaN(props.width) ? props.width : `${props.width}px`)};
+  ${props => props.query} height: ${props => (isNaN(props.height) ? props.height : `${props.height}px`)};
+  max-width: ${props => (isNaN(props.maxWidth) ? props.maxWidth : `${props.maxWidth}px`)};
+  ${props => (props.onClick ? 'cursor: pointer;' : '')} width: ${props =>
+      isNaN(props.width) ? props.width : `${props.width}px`};
   margin-top: 16px;
   border-radius: 5px;
   overflow: hidden;

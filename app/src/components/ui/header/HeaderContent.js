@@ -1,4 +1,3 @@
-import React from 'react'
 import styled from 'styled-components'
 
 const HeaderContent = styled.div`
@@ -6,6 +5,6 @@ const HeaderContent = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  ${props => props.padded ? 'padding: 0 16px;' : ''}
+  ${props => (props.padded ? 'padding: 0 16px;' : '')};
 `
 export default HeaderContent

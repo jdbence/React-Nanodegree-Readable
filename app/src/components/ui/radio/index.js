@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import radioIcon from 'static/icon/radio.svg'
 import radioCheckedIcon from 'static/icon/radio-checked.svg'
 
-const RadioHoc = ({label, checked, children, onChange}) => {
+const RadioHoc = ({ label, checked, children, onChange }) => {
   const Radio = styled.div`
     position: relative;
     cursor: pointer;
@@ -26,12 +26,14 @@ const RadioHoc = ({label, checked, children, onChange}) => {
   `
   const icon = checked ? radioCheckedIcon : radioIcon
   const value = label || children
-  return <Radio>
-    <img src={icon} alt="radio" />
-    <label>
-      <input type="radio" value={value} checked={checked} onChange={() => onChange(value)}/>
-      {value}
-    </label>
-  </Radio>
+  return (
+    <Radio>
+      <img src={icon} alt="radio" />
+      <label>
+        <input type="radio" value={value} checked={checked} onChange={() => onChange(value)} />
+        {value}
+      </label>
+    </Radio>
+  )
 }
 export default RadioHoc

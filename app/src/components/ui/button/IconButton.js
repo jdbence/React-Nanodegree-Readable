@@ -1,6 +1,5 @@
 import React from 'react'
-import styled from 'styled-components'
-import {default as Button} from './Button'
+import { default as Button } from './Button'
 
 const IconHOC = props => {
   const IconButton = Button.extend`
@@ -11,12 +10,12 @@ const IconHOC = props => {
     & > img {
       width: 50%;
     }
-    ${props.buttonStyle || ''}
+    ${props.buttonStyle || ''};
   `
   return (
     <IconButton onClick={props.onClick}>
-       {props.src && <img src={props.src} alt={props.alt} />}
-       {props.children}
+      {props.src && <img src={props.src} alt={props.alt} />}
+      {props.children}
     </IconButton>
   )
 }

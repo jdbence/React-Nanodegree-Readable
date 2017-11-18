@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 
-const ImageHoc = ({href, height, width, ...props}) => {
+const ImageHoc = ({ href, height, width, ...props }) => {
   const Image = styled.div`
     background-repeat: no-repeat;
     background-position: center center;

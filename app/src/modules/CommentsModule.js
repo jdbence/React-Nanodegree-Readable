@@ -1,5 +1,11 @@
 import { createAction, handleActions } from 'redux-actions'
-import { fetchCommentsAPI, createCommentAPI, deleteCommentAPI, updateCommentAPI, voteCommentAPI } from 'utils/ArticleAPI'
+import {
+  fetchCommentsAPI,
+  createCommentAPI,
+  deleteCommentAPI,
+  updateCommentAPI,
+  voteCommentAPI
+} from 'utils/ArticleAPI'
 import { uniqueArray } from 'utils/ArrayUtil'
 
 // Constants
@@ -15,28 +21,23 @@ const fetchCommentsComplete = createAction(FETCH_COMMENTS)
 const updateCommentComplete = createAction(UPDATE_COMMENT)
 
 export function fetchComments(id) {
-  return dispatch => fetchCommentsAPI(id)
-    .then(comments => dispatch(fetchCommentsComplete(comments)))
+  return dispatch => fetchCommentsAPI(id).then(comments => dispatch(fetchCommentsComplete(comments)))
 }
 
-export function createComment(comment){
-  return dispatch => createCommentAPI(comment)
-    .then(d => dispatch(createCommentComplete(d)))
+export function createComment(comment) {
+  return dispatch => createCommentAPI(comment).then(d => dispatch(createCommentComplete(d)))
 }
 
 export function deleteComment(id) {
-  return dispatch => deleteCommentAPI(id)
-    .then(() => dispatch(deleteCommentComplete(id)))
+  return dispatch => deleteCommentAPI(id).then(() => dispatch(deleteCommentComplete(id)))
 }
 
 export function updateComment(comment) {
-  return dispatch => updateCommentAPI(comment)
-    .then(() => dispatch(updateCommentComplete(comment)))
+  return dispatch => updateCommentAPI(comment).then(() => dispatch(updateCommentComplete(comment)))
 }
 
-export function voteComment(id, option){
-  return dispatch => voteCommentAPI({id, option})
-    .then(response => dispatch(updateCommentComplete(response)))
+export function voteComment(id, option) {
+  return dispatch => voteCommentAPI({ id, option }).then(response => dispatch(updateCommentComplete(response)))
 }
 
 export const actions = {
@@ -54,7 +55,7 @@ export default handleActions(
     [FETCH_COMMENTS]: (state, { payload }) => uniqueArray([...state, ...payload]),
     [CREATE_COMMENT]: (state, { payload }) => uniqueArray([...state, payload]),
     [DELETE_COMMENT]: (state, { payload }) => state.filter(item => item.id !== payload),
-    [UPDATE_COMMENT]: (state, { payload }) => state.map((e) => e.id === payload.id ? {...e, ...payload} : e)
+    [UPDATE_COMMENT]: (state, { payload }) => state.map(e => (e.id === payload.id ? { ...e, ...payload } : e))
   },
   initialState
 )

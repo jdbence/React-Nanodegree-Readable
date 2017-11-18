@@ -12,8 +12,7 @@ export const removeCategory = createAction(REMOVE_CATEGORY)
 const setCategoriesComplete = createAction(FETCH_CATEGORIES)
 
 export function fetchCategories() {
-  return dispatch => fetchCategoriesAPI()
-    .then(d => dispatch(setCategoriesComplete(d)))
+  return dispatch => fetchCategoriesAPI().then(d => dispatch(setCategoriesComplete(d)))
 }
 
 export const actions = {

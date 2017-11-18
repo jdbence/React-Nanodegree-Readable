@@ -1,7 +1,7 @@
-/*global localStorage */
-import React, {PureComponent} from 'react'
+/* global localStorage */
+import React, { PureComponent } from 'react'
 import styled from 'styled-components'
-import {Button} from 'components/ui/button'
+import { Button } from 'components/ui/button'
 import Card from 'components/ui/card'
 import Splash from 'components/ui/splash'
 
@@ -17,12 +17,12 @@ const Fill = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-`;
+`
 
 const Error = styled.div`
   color: red;
   padding: 10px;
-`;
+`
 
 const H2 = styled.h2`
   margin-bottom: 10px;
@@ -40,20 +40,20 @@ class CreateArticle extends PureComponent {
     author: localStorage.getItem('author') || '',
     typed: false
   }
-  onInputChange = (e) => {
+  onInputChange = e => {
     this.setState({
       author: e.target.value,
       typed: true
     })
   }
   saveArticle = () => {
-    const {onCreate} = this.props
+    const { onCreate } = this.props
     const { author } = this.state
     localStorage.setItem('author', author)
     onCreate(author)
   }
-  render(){
-    const {onClose} = this.props
+  render() {
+    const { onClose } = this.props
     const { author, typed } = this.state
     return (
       <Splash>
@@ -62,11 +62,20 @@ class CreateArticle extends PureComponent {
             <H2>Create Article</H2>
             <Fill>
               <label>Author</label>
-              <Input type="text" name="author" key="author" placeholder='Make your mark' value={author} onChange={this.onInputChange}/>
-              {typed && author.length < MIN_LENGTH && <Error >Must have atleast {MIN_LENGTH} characters</Error>}
+              <Input
+                type="text"
+                name="author"
+                key="author"
+                placeholder="Make your mark"
+                value={author}
+                onChange={this.onInputChange}
+              />
+              {typed && author.length < MIN_LENGTH && <Error>Must have atleast {MIN_LENGTH} characters</Error>}
             </Fill>
             <div>
-              <Button disabled={author.length < MIN_LENGTH} onClick={this.saveArticle}>Save</Button>
+              <Button disabled={author.length < MIN_LENGTH} onClick={this.saveArticle}>
+                Save
+              </Button>
               <Button onClick={onClose}>Cancel</Button>
             </div>
           </CardBody>

@@ -1,18 +1,18 @@
-import React, {Component} from 'react'
-import {connect} from 'react-redux'
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import styled from 'styled-components'
-import {Header, HeaderContent} from 'components/ui/header'
+import { Header, HeaderContent } from 'components/ui/header'
 import Page from 'components/ui/page'
 import Drawer from 'components/ui/drawer'
-import {Link} from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import Article from 'components/ui/article'
-import {IconButton} from 'components/ui/button'
+import { IconButton } from 'components/ui/button'
 import Radio from 'components/ui/radio'
 import Empty from 'components/ui/empty'
 import { push, goBack } from 'react-router-redux'
 import { fetchPosts, votePost } from 'modules/PostModule'
 import { fetchCategories } from 'modules/CategoryModule'
-import {setSort, ALPHA, DATE, RATING} from 'modules/SortModule'
+import { setSort, ALPHA, DATE, RATING } from 'modules/SortModule'
 import { capitalize, dash } from 'utils/StringUtil'
 import { postSort, postFilter } from 'utils/ArrayUtil'
 import backIcon from 'static/icon/arrow-back.svg'
@@ -53,48 +53,46 @@ const Category = styled.div`
   }
 `
 
-const linkStyle = {textDecoration: 'none', color:'inherit'}
+const linkStyle = { textDecoration: 'none', color: 'inherit' }
 
 class CategoryRoute extends Component {
-  
   state = {
     settings: false
   }
-  
-  componentDidMount(){
+
+  componentDidMount() {
     this.checkRemote(this.props)
   }
-  
-  componentWillReceiveProps(nextProps){
+
+  componentWillReceiveProps(nextProps) {
     const lastCategory = this.props.match.params.category
     const nextCategory = nextProps.match.params.category
-    if(lastCategory !== nextCategory){
+    if (lastCategory !== nextCategory) {
       this.checkRemote(nextProps)
     }
   }
-  
-  render () {
+
+  render() {
     const { categories, posts, match, goto, goBack, sort } = this.props
     const category = match.params.category || ''
     const { settings } = this.state
     const sortOptions = [ALPHA, DATE, RATING]
     const isRoot = category.length === 0
-    
+
     return (
       <div className="app">
         <Header>
-          {!isRoot && <IconButton src={backIcon} alt="back" onClick={goBack}/>}
-          {
-            isRoot
-            ? <HeaderContent padded>Readable</HeaderContent>
-            : <HeaderContent>{capitalize(category)}</HeaderContent>
-          }
-          <IconButton src={newPostIcon} alt="New Post" onClick={()=>goto(`/create`)}/>
-          <IconButton src={settingsIcon} alt="settings" onClick={() => this.toggle('settings')}/>
+          {!isRoot && <IconButton src={backIcon} alt="back" onClick={goBack} />}
+          {isRoot ? (
+            <HeaderContent padded>Readable</HeaderContent>
+          ) : (
+            <HeaderContent>{capitalize(category)}</HeaderContent>
+          )}
+          <IconButton src={newPostIcon} alt="New Post" onClick={() => goto(`/create`)} />
+          <IconButton src={settingsIcon} alt="settings" onClick={() => this.toggle('settings')} />
         </Header>
         <Page>
-          {
-            isRoot &&
+          {isRoot && (
             <Categories>
               <CategoriesInner>
                 {categories.map(d => (
@@ -104,61 +102,64 @@ class CategoryRoute extends Component {
                 ))}
               </CategoriesInner>
             </Categories>
-          }
+          )}
           <CardContainer>
-            {posts.map(p => <Article {...p} key={`card_${p.id}`} onLike={()=>this.onLike(p.id)} onClick={()=>goto(`/${p.category}/${p.id}`)}/>)}
+            {posts.map(p => (
+              <Article
+                {...p}
+                key={`card_${p.id}`}
+                onLike={() => this.onLike(p.id)}
+                onClick={() => goto(`/${p.category}/${p.id}`)}
+              />
+            ))}
           </CardContainer>
-          {posts.length === 0 && <Empty/>}
+          {posts.length === 0 && <Empty />}
         </Page>
-        {settings &&
+        {settings && (
           <Drawer onClick={() => this.toggle('settings')}>
             Sort By:
-            {sortOptions.map(({type}) => <Radio key={`radio_${type}`} checked={sort==type} onChange={this.onSortChange}>{type}</Radio>)}
+            {sortOptions.map(({ type }) => (
+              <Radio key={`radio_${type}`} checked={sort === type} onChange={this.onSortChange}>
+                {type}
+              </Radio>
+            ))}
           </Drawer>
-        }
+        )}
       </div>
     )
   }
-  
-  checkRemote(props){
+
+  checkRemote(props) {
     const { posts, categories, match, fetchPosts, fetchCategories } = props
     const category = match.params.category
-    
-    if(!category && categories.length === 0){
+
+    if (!category && categories.length === 0) {
       fetchCategories()
       fetchPosts()
-    } else if(posts.length === 0){
+    } else if (posts.length === 0) {
       fetchPosts(category)
     }
   }
-  
-  onLike = (id) => {
+
+  onLike = id => {
     const { posts, votePost } = this.props
     const post = posts.find(p => p.id === id)
-    if(post){
+    if (post) {
       votePost(id, post.voted ? 'downVote' : 'upVote')
     }
   }
-  
-  onSortChange = (sort) => {
-    this.props.setSort(
-      sort === ALPHA.type
-        ? ALPHA
-        : sort === DATE.type
-        ? DATE
-        : RATING
-    )
+
+  onSortChange = sort => {
+    this.props.setSort(sort === ALPHA.type ? ALPHA : sort === DATE.type ? DATE : RATING)
   }
-  
-  toggle = (prop) => {
+
+  toggle = prop => {
     this.setState({
       ...this.state,
-			[prop]: !this.state[prop],
-		})
+      [prop]: !this.state[prop]
+    })
   }
 }
-
-
 
 const mapDispatchToProps = {
   fetchCategories,
@@ -170,15 +171,13 @@ const mapDispatchToProps = {
 }
 
 const mapStateToProps = state => {
-  const {categories, sort, posts, router} = state
+  const { categories, sort, posts, router } = state
   const category = router.location.pathname.split('/')[1]
   const type = sort.type
   return {
     sort: type,
     categories,
-    posts: posts
-      .filter(postFilter(category))
-      .sort(postSort(type))
+    posts: posts.filter(postFilter(category)).sort(postSort(type))
   }
 }
 

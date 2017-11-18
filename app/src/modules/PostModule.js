@@ -15,28 +15,23 @@ const fetchPostsComplete = createAction(FETCH_POSTS)
 const updatePostComplete = createAction(UPDATE_POST)
 
 export function fetchPosts(category) {
-  return dispatch => fetchPostsAPI(category)
-    .then(posts => dispatch(fetchPostsComplete(posts)))
+  return dispatch => fetchPostsAPI(category).then(posts => dispatch(fetchPostsComplete(posts)))
 }
 
-export function createPost(post){
-  return dispatch => createPostAPI(post)
-    .then(d => dispatch(createPostComplete(d)))
+export function createPost(post) {
+  return dispatch => createPostAPI(post).then(d => dispatch(createPostComplete(d)))
 }
 
 export function deletePost(id) {
-  return dispatch => deletePostAPI(id)
-    .then(() => dispatch(deletePostComplete(id)))
+  return dispatch => deletePostAPI(id).then(() => dispatch(deletePostComplete(id)))
 }
 
 export function updatePost(post) {
-  return dispatch => updatePostAPI(post)
-    .then(() => dispatch(updatePostComplete(post)))
+  return dispatch => updatePostAPI(post).then(() => dispatch(updatePostComplete(post)))
 }
 
-export function votePost(id, option){
-  return dispatch => votePostAPI({id, option})
-    .then(post => dispatch(updatePostComplete(post)))
+export function votePost(id, option) {
+  return dispatch => votePostAPI({ id, option }).then(post => dispatch(updatePostComplete(post)))
 }
 
 export const actions = {
@@ -54,7 +49,7 @@ export default handleActions(
     [FETCH_POSTS]: (state, { payload }) => uniqueArray([...state, ...payload]),
     [CREATE_POST]: (state, { payload }) => uniqueArray([...state, payload]),
     [DELETE_POST]: (state, { payload }) => state.filter(item => item.id !== payload),
-    [UPDATE_POST]: (state, { payload }) => state.map((e) => e.id === payload.id ? {...e, ...payload} : e)
+    [UPDATE_POST]: (state, { payload }) => state.map(e => (e.id === payload.id ? { ...e, ...payload } : e))
   },
   initialState
 )

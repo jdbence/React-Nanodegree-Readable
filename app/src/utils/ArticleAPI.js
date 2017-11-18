@@ -1,13 +1,15 @@
-/*global location localStorage fetch */
+/* global location localStorage fetch */
 // C9 prevents localhost requests
 const api = `//${location.hostname}:8081`
 let token = localStorage.token
 if (!token)
-  token = localStorage.token = Math.random().toString(36).substr(-8)
+  token = localStorage.token = Math.random()
+    .toString(36)
+    .substr(-8)
 
 const headers = {
-  'Authorization': token,
-  'Content-Type': 'application/json',
+  Authorization: token,
+  'Content-Type': 'application/json'
 }
 
 export const fetchCategoriesAPI = () => {
@@ -18,21 +20,21 @@ export const fetchCategoriesAPI = () => {
     .catch(err => console.error(err))
 }
 
-export const fetchCommentsAPI = (id) => {
+export const fetchCommentsAPI = id => {
   const options = { headers }
   return fetch(`${api}/posts/${id}/comments`, options)
     .then(res => res.json())
     .catch(err => console.error(err))
 }
 
-export const fetchPostsAPI = (category) => {
+export const fetchPostsAPI = category => {
   const options = { headers }
   return fetch(`${api + (category ? `/${category}` : '')}/posts`, options)
     .then(res => res.json())
     .catch(err => console.error(err))
 }
 
-export const createPostAPI = async ({id, timestamp, title, author, body, category}) => {
+export const createPostAPI = async ({ id, timestamp, title, author, body, category }) => {
   const options = {
     method: 'POST',
     headers,
@@ -50,8 +52,7 @@ export const createPostAPI = async ({id, timestamp, title, author, body, categor
   try {
     const response = await fetch(`${api}/posts`, options)
     return response.json()
-  }
-  catch (e) {
+  } catch (e) {
     console.error(e)
   }
 }
@@ -68,13 +69,12 @@ export const updatePostAPI = async ({ id, title, body }) => {
   try {
     const res = await fetch(`${api}/posts/${id}`, options)
     return res.json()
-  }
-  catch (err) {
+  } catch (err) {
     console.error(err)
   }
 }
 
-export const deletePostAPI = async (id) => {
+export const deletePostAPI = async id => {
   const options = {
     method: 'DELETE',
     headers
@@ -82,8 +82,7 @@ export const deletePostAPI = async (id) => {
   try {
     const res = await fetch(`${api}/posts/${id}`, options)
     return res.json()
-  }
-  catch (err) {
+  } catch (err) {
     console.error(err)
   }
 }
@@ -99,13 +98,12 @@ export const votePostAPI = async ({ id, option }) => {
   try {
     const res = await fetch(`${api}/posts/${id}`, options)
     return res.json()
-  }
-  catch (err) {
+  } catch (err) {
     console.error(err)
   }
 }
 
-export const createCommentAPI = async ({id, body, author, parentId, timestamp}) => {
+export const createCommentAPI = async ({ id, body, author, parentId, timestamp }) => {
   const options = {
     method: 'POST',
     headers,
@@ -121,8 +119,7 @@ export const createCommentAPI = async ({id, body, author, parentId, timestamp}) 
   try {
     const res = await fetch(`${api}/comments`, options)
     return res.json()
-  }
-  catch (err) {
+  } catch (err) {
     console.error(err)
   }
 }
@@ -139,13 +136,12 @@ export const updateCommentAPI = async ({ id, timestamp, body }) => {
   try {
     const res = await fetch(`${api}/comments/${id}`, options)
     return res.json()
-  }
-  catch (err) {
+  } catch (err) {
     console.error(err)
   }
 }
 
-export const deleteCommentAPI = async (id) => {
+export const deleteCommentAPI = async id => {
   const options = {
     method: 'DELETE',
     headers
@@ -153,8 +149,7 @@ export const deleteCommentAPI = async (id) => {
   try {
     const res = await fetch(`${api}/comments/${id}`, options)
     return res.json()
-  }
-  catch (err) {
+  } catch (err) {
     console.error(err)
   }
 }
@@ -170,8 +165,7 @@ export const voteCommentAPI = async ({ id, option }) => {
   try {
     const res = await fetch(`${api}/comments/${id}`, options)
     return res.json()
-  }
-  catch (err) {
+  } catch (err) {
     console.error(err)
   }
 }

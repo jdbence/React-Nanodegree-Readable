@@ -1,6 +1,6 @@
-import React, {Component} from 'react'
+import React from 'react'
 import styled from 'styled-components'
-import {Button} from 'components/ui/button'
+import { Button } from 'components/ui/button'
 import Card from 'components/ui/card'
 import Splash from 'components/ui/splash'
 import robotIcon from 'static/icon/robot.svg'
@@ -21,12 +21,12 @@ const Fill = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-`;
+`
 
-const MissingTitle = ({onAddTitle, onClose}) => (
+const MissingTitle = ({ onAddTitle, onClose }) => (
   <Splash>
     <Card maxWidth={800} width="100%">
-      <img src={robotIcon} alt="Robot" style={{padding: 10}}/>
+      <img src={robotIcon} alt="Robot" style={{ padding: 10 }} />
       <CardBody>
         <h2>Create a title before saving..</h2>
         <Fill>

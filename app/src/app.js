@@ -1,12 +1,12 @@
-import React, {Component} from 'react'
-import {Provider} from 'react-redux'
-import {Switch,Route} from 'react-router'
-import {ConnectedRouter} from 'react-router-redux'
-import {PostRoute, CategoryRoute, CreateRoute} from 'components/routes'
-import store, {history} from './store'
+import React, { Component } from 'react'
+import { Provider } from 'react-redux'
+import { Switch, Route } from 'react-router'
+import { ConnectedRouter } from 'react-router-redux'
+import { PostRoute, CategoryRoute, CreateRoute } from 'components/routes'
+import store, { history } from './store'
 
 class App extends Component {
-  render () {
+  render() {
     return (
       <Provider store={store}>
         <ConnectedRouter history={history}>
