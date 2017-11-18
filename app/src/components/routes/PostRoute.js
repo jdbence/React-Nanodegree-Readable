@@ -1,19 +1,22 @@
+/*global localStorage*/
+
 import React, {Component} from 'react'
 import styled from 'styled-components'
 import {connect} from 'react-redux'
 import {Header, HeaderContent} from 'components/ui/header'
 import Page from 'components/ui/page'
 import {IconButton,ToggleHeart} from 'components/ui/button'
+import {EditComment} from 'components/ui/comment'
 import {Avatar,AvatarDesc} from 'components/ui/avatar'
 import Empty from 'components/ui/empty'
 import {MissingTitleModal} from 'components/ui/modal'
 import SwipeableViews from 'react-swipeable-views'
 import { goBack } from 'react-router-redux'
-import { fetchPosts, deletePost, updatePost } from 'modules/PostModule'
-import { fetchComments, voteComment } from 'modules/CommentsModule'
+import { fetchPosts, votePost, deletePost, updatePost } from 'modules/PostModule'
+import { fetchComments, voteComment, createComment, deleteComment, updateComment } from 'modules/CommentsModule'
 import { ALPHA, DATE, RATING} from 'modules/SortModule'
-import { color, capitalize, dateStamp } from 'utils/StringUtil'
-import { postSort, postFilter } from 'utils/ArrayUtil'
+import { color, capitalize, dateStamp, rnd } from 'utils/StringUtil'
+import { multiSort, postSort, postFilter } from 'utils/ArrayUtil'
 import md from 'react-markings'
 import getTitle from 'get-md-title';
 import {Controlled as CodeMirror} from 'react-codemirror2'
@@ -54,25 +57,40 @@ const AvatarContainer = styled.div`
   display: flex;
   margin-bottom: 10px;
 `
+const CommentButtonStyle = `
+  width: 40px;
+  height: 40px;
+  background-color: #2196f3;
+  border-radius: 50%;
+  margin-left: 5px;
+  & img {
+    width: 60%;
+  }
+`
 
-const CardsView = ({posts, comments, source, index, onChange, onLike}) => (
+const CardsView = ({posts, comments, source, commentEditing, index, onCancel, onSave, onChange, onLike, onEdit, onDelete}) => (
   <SwipeableViews enableMouseEvents slideStyle={styles.slideContainer} index={index} onChangeIndex={onChange}>
     {posts.map(p =>
     <div key={`card_${p.id}`} style={{...styles.slide}}>
       {md([p.body])}
       <CommentSection>
         Comments
+        <EditComment onSave={onSave} post={p.id} author={localStorage.getItem('author')||''} comment={''}/>
         {
           comments
           .filter(c => c.parentId == p.id)
           .map(c =>
-          <Comment key={`comment_${c.id}`} {...c}>
+          c.id === commentEditing
+          ? <EditComment key={`comment_${c.id}`} onCancel={onCancel} onSave={onSave} id={c.id} author={c.author} comment={c.body} edit/>
+          : <Comment key={`comment_${c.id}`} {...c}>
             <AvatarContainer>
               <Avatar color={color(c.author)}>{capitalize(c.author[0])}</Avatar>
               <AvatarDesc>
                 <p>{c.author}</p>
                 <p>{dateStamp(c.timestamp)}</p>
               </AvatarDesc>
+              <IconButton src={trashIcon} alt="delete" buttonStyle={CommentButtonStyle} onClick={()=>onDelete(c.id)}/>
+              <IconButton src={editIcon} alt="edit" buttonStyle={CommentButtonStyle} onClick={()=>onEdit(c.id)}/>
             </AvatarContainer>
             {c.body}
             <CommentFooter>
@@ -91,7 +109,8 @@ class PostRoute extends Component {
     postSource: '',
     postIndex: -1,
     edit: false,
-    missingTitle: false
+    missingTitle: false,
+    commentEditing: -1
   }
   
   componentDidMount(){
@@ -123,8 +142,8 @@ class PostRoute extends Component {
   }
   
   render () {
-    const { posts, comments, match, goBack } = this.props
-    const { postSource, edit, missingTitle, postIndex } = this.state
+    const { posts, comments, match, goBack, deleteComment } = this.props
+    const { postSource, commentEditing, edit, missingTitle, postIndex } = this.state
     const category = match.params.category
     const options =  { mode: 'markdown'}
     return (
@@ -149,12 +168,34 @@ class PostRoute extends Component {
             ? <Empty/>
             : edit
             ? <CodeMirror value={postSource} onBeforeChange={this.updatePost} options={options} />
-            : <CardsView onLike={this.onLike} onChange={this.onChangePage} posts={posts} comments={comments} index={postIndex} />
+            : <CardsView onCancel={()=>this.onChange('commentEditing', -1)} onSave={this.onSaveComment} onLike={this.onLike} onChange={this.onChangePage} onEdit={id=>this.onChange('commentEditing', id)} onDelete={deleteComment} posts={posts} comments={comments} commentEditing={commentEditing} index={postIndex} />
           }
         </Page>
         { missingTitle && <MissingTitleModal onAddTitle={() => this.addTitle()} onClose={() => this.toggle(MISSING_TITLE)}/> }
       </div>
     )
+  }
+  
+  onSaveComment = (parentId, id, author, body) => {
+    const { updateComment, createComment} = this.props
+    if(!id){
+      createComment({
+        id: rnd(),
+        body,
+        author,
+        parentId,
+        timestamp: new Date().getTime()
+      })
+    } else {
+      updateComment({
+        id,
+        body,
+        timestamp: new Date().getTime()
+      })
+      if(id === this.state.commentEditing){
+        this.onChange('commentEditing', -1)
+      }
+    }
   }
   
   onLike = (id) => {
@@ -195,10 +236,14 @@ class PostRoute extends Component {
 		})
   }
   
-  toggle = (prop) => {
+  onChange = (prop, value) => {
     this.setState({
-			[prop]: !this.state[prop],
-		})
+      [prop]: value
+    })
+  }
+  
+  toggle = (prop) => {
+    this.onChange(prop, !this.state[prop])
   }
   
   addTitle = () => {
@@ -241,7 +286,11 @@ const mapDispatchToProps = {
   fetchPosts,
   deletePost,
   updatePost,
+  votePost,
   fetchComments,
+  deleteComment,
+  updateComment,
+  createComment,
   voteComment
 }
 
@@ -250,7 +299,8 @@ const mapStateToProps = state => {
   const category = router.location.pathname.split('/')[1]
   const type = sort.type
   return {
-    comments,
+    comments: comments
+      .sort(multiSort('-voteScore','-timestamp')),
     posts: posts
       .filter(postFilter(category))
       .sort(postSort(type))

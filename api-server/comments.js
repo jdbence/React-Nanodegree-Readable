@@ -66,7 +66,7 @@ function add (token, comment) {
       body: comment.body,
       author: comment.author,
       parentId: comment.parentId,
-      voteScore: 1,
+      voteScore: 0,
       deleted: false,
       voted: false,
       parentDeleted: false

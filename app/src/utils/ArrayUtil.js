@@ -30,3 +30,27 @@ export const postSort = (type) => type === ALPHA.type
   : type === DATE.type
   ? dateSort
   : ratingSort
+
+// Numeric sort ASC or DESC
+export const multiSort = (...fields) => {
+  let l = fields.length
+  let dir = new Array(l)
+  fields = fields.map((f, i) => {
+    if (f[0] === '-') {
+      dir[i] = -1
+      f = f.substring(1)
+    } else {
+      dir[i] = 1
+    }
+    return f
+  })
+
+  return (a, b) => {
+    for (let i = 0; i < l; i++) {
+      const o = fields[i]
+      if (a[o] > b[o]) return dir[i]
+      if (a[o] < b[o]) return -dir[i]
+    }
+    return 0
+  }
+}
