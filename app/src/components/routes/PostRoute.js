@@ -136,8 +136,8 @@ class PostRoute extends Component {
   state = {
     postSource: '',
     postIndex: -1,
-    // edit: false,
     missingTitle: false,
+    missingPost: false,
     commentEditing: -1
   }
 
@@ -151,8 +151,9 @@ class PostRoute extends Component {
 
   componentWillMount() {
     const { posts, match, fetchComments } = this.props
+    const { missingPost, postIndex } = this.state
     // find the index of the post
-    if (this.state.postIndex === -1 && posts.length > 0) {
+    if (!missingPost && postIndex === -1 && posts.length > 0) {
       const id = match.params.post_id
       this.readyPostData(id, posts)
       fetchComments(id)
@@ -161,8 +162,9 @@ class PostRoute extends Component {
 
   componentWillReceiveProps(nextProps) {
     const { posts, match, fetchComments } = nextProps
+    const { missingPost, postIndex } = this.state
     // find the index of the post after posts loaded
-    if (this.state.postIndex === -1 && posts.length > 0) {
+    if (!missingPost && postIndex === -1 && posts.length > 0) {
       const id = match.params.post_id
       this.readyPostData(id, posts)
       fetchComments(id)
@@ -171,9 +173,10 @@ class PostRoute extends Component {
 
   render() {
     const { posts, comments, match, deleteComment, edit, goto } = this.props
-    const { postSource, commentEditing, missingTitle, postIndex } = this.state
+    const { postSource, commentEditing, missingTitle, postIndex, missingPost } = this.state
     const category = match.params.category
     const options = { mode: 'markdown' }
+
     return (
       <div className="app">
         {edit ? (
@@ -186,12 +189,12 @@ class PostRoute extends Component {
           <Header>
             <IconButton src={backIcon} alt="back" onClick={() => goto(`/${category}`)} />
             <HeaderContent>{capitalize(category)}</HeaderContent>
-            <IconButton src={trashIcon} alt="trash" onClick={this.removeArticle} />
-            {posts.length > 0 && <IconButton src={editIcon} alt="edit" onClick={this.toggleEdit} />}
+            {!missingPost && <IconButton src={trashIcon} alt="trash" onClick={this.removeArticle} />}
+            {!missingPost && <IconButton src={editIcon} alt="edit" onClick={this.toggleEdit} />}
           </Header>
         )}
         <Page background="white">
-          {posts.length === 0 ? (
+          {missingPost || posts.length === 0 ? (
             <Empty />
           ) : edit ? (
             <CodeMirror value={postSource} onBeforeChange={this.updatePost} options={options} />
@@ -218,11 +221,18 @@ class PostRoute extends Component {
   }
 
   readyPostData(id, posts) {
-    const index = posts.findIndex(e => e.id === id) || 0
-    const post = posts[index]
-    this.updatePostIndex(index, false)
+    const postIndex = posts.findIndex(e => e.id === id)
+    const post = posts[postIndex]
+
     if (post) {
-      this.updatePost(null, null, posts[index].body)
+      this.setState({
+        postIndex,
+        postSource: posts[postIndex].body
+      })
+    } else {
+      this.setState({
+        missingPost: true
+      })
     }
   }
 
