@@ -84,7 +84,7 @@ const CardsView = ({
       <div key={`card_${p.id}`} style={{ ...styles.slide }}>
         {md([p.body])}
         <CommentSection>
-          Comments
+          Comments {comments.filter(c => c.parentId === p.id).length}
           <EditComment onSave={onSave} post={p.id} author={localStorage.getItem('author') || ''} comment={''} />
           {comments.filter(c => c.parentId === p.id).map(
             c =>
@@ -110,7 +110,7 @@ const CardsView = ({
                       src={trashIcon}
                       alt="delete"
                       buttonStyle={CommentButtonStyle}
-                      onClick={() => onDelete(c.id)}
+                      onClick={() => onDelete(c.id, c.parentId)}
                     />
                     <IconButton
                       src={editIcon}
@@ -179,7 +179,6 @@ class PostRoute extends Component {
         {edit ? (
           <Header>
             <HeaderContent padded>Editing Article</HeaderContent>
-            <IconButton src={trashIcon} alt="trash" onClick={this.removeArticle} />
             <IconButton src={saveIcon} alt="save" onClick={this.saveArticle} />
             <IconButton src={cancelIcon} alt="cancel" onClick={() => this.toggle(EDIT)} />
           </Header>
@@ -187,10 +186,11 @@ class PostRoute extends Component {
           <Header>
             <IconButton src={backIcon} alt="back" onClick={goBack} />
             <HeaderContent>{capitalize(category)}</HeaderContent>
+            <IconButton src={trashIcon} alt="trash" onClick={this.removeArticle} />
             {posts.length > 0 && <IconButton src={editIcon} alt="edit" onClick={() => this.toggleEdit()} />}
           </Header>
         )}
-        <Page>
+        <Page background="white">
           {posts.length === 0 ? (
             <Empty />
           ) : edit ? (

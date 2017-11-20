@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import Card from 'components/ui/card'
-import { ToggleHeart } from 'components/ui/button'
+import { ToggleHeart, CommentsButton } from 'components/ui/button'
 import Image from 'components/ui/image'
 import { Avatar, AvatarDesc } from 'components/ui/avatar'
 import { capitalize, color, dateStamp } from 'utils/StringUtil'
@@ -48,7 +48,7 @@ const AvatarContainer = styled.div`
   display: flex;
 `
 
-const Article = ({ id, voted = false, voteScore, title, body, author, timestamp, onClick, onLike }) => {
+const Article = ({ id, voted = false, voteScore, title, body, author, commentCount, timestamp, onClick, onLike }) => {
   // get image if one exists
   const img = getImage(body)
   // strip markdown to show plain text
@@ -56,6 +56,7 @@ const Article = ({ id, voted = false, voteScore, title, body, author, timestamp,
   return (
     <Card onClick={onClick} query={CardQuery} height={280} maxWidth={500}>
       <ToggleHeart onClick={onLike} voted={voted} voteScore={voteScore} />
+      <CommentsButton comments={commentCount} />
       <Image href={img && img.src} className="image" />
       <CardBody>
         <div>

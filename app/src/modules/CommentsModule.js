@@ -7,6 +7,7 @@ import {
   voteCommentAPI
 } from 'utils/ArticleAPI'
 import { uniqueArray } from 'utils/ArrayUtil'
+import { updatePostComments } from 'modules/PostModule'
 
 // Constants
 const CREATE_COMMENT = 'CREATE_COMMENT@Readable'
@@ -25,11 +26,19 @@ export function fetchComments(id) {
 }
 
 export function createComment(comment) {
-  return dispatch => createCommentAPI(comment).then(d => dispatch(createCommentComplete(d)))
+  return dispatch =>
+    createCommentAPI(comment).then(d => {
+      dispatch(createCommentComplete(d))
+      dispatch(updatePostComments({ id: comment.parentId, change: 1 }))
+    })
 }
 
-export function deleteComment(id) {
-  return dispatch => deleteCommentAPI(id).then(() => dispatch(deleteCommentComplete(id)))
+export function deleteComment(id, parentId) {
+  return dispatch =>
+    deleteCommentAPI(id).then(() => {
+      dispatch(deleteCommentComplete(id))
+      dispatch(updatePostComments({ id: parentId, change: -1 }))
+    })
 }
 
 export function updateComment(comment) {

@@ -7,12 +7,14 @@ const CREATE_POST = 'CREATE_POST@Readable'
 const DELETE_POST = 'DELETE_POST@Readable'
 const FETCH_POSTS = 'FETCH_POSTS@Readable'
 const UPDATE_POST = 'UPDATE_POST@Readable'
+const UPDATE_POST_COMMENTS = 'UPDATE_POST_COMMENTS@Readable'
 
 // Actions
 const createPostComplete = createAction(CREATE_POST)
 const deletePostComplete = createAction(DELETE_POST)
 const fetchPostsComplete = createAction(FETCH_POSTS)
 const updatePostComplete = createAction(UPDATE_POST)
+export const updatePostComments = createAction(UPDATE_POST_COMMENTS)
 
 export function fetchPosts(category) {
   return dispatch => fetchPostsAPI(category).then(posts => dispatch(fetchPostsComplete(posts)))
@@ -49,7 +51,9 @@ export default handleActions(
     [FETCH_POSTS]: (state, { payload }) => uniqueArray([...state, ...payload]),
     [CREATE_POST]: (state, { payload }) => uniqueArray([...state, payload]),
     [DELETE_POST]: (state, { payload }) => state.filter(item => item.id !== payload),
-    [UPDATE_POST]: (state, { payload }) => state.map(e => (e.id === payload.id ? { ...e, ...payload } : e))
+    [UPDATE_POST]: (state, { payload }) => state.map(e => (e.id === payload.id ? { ...e, ...payload } : e)),
+    [UPDATE_POST_COMMENTS]: (state, { payload }) =>
+      state.map(e => (e.id === payload.id ? { ...e, commentCount: e.commentCount + payload.change } : e))
   },
   initialState
 )
