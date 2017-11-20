@@ -9,8 +9,8 @@ import Article from 'components/ui/article'
 import { IconButton } from 'components/ui/button'
 import Radio from 'components/ui/radio'
 import Empty from 'components/ui/empty'
-import { push, goBack } from 'react-router-redux'
-import { fetchPosts, votePost } from 'modules/PostModule'
+import { push } from 'react-router-redux'
+import { fetchPosts, votePost, deletePost } from 'modules/PostModule'
 import { fetchCategories } from 'modules/CategoryModule'
 import { setSort, ALPHA, DATE, RATING } from 'modules/SortModule'
 import { capitalize, dash } from 'utils/StringUtil'
@@ -73,7 +73,7 @@ class CategoryRoute extends Component {
   }
 
   render() {
-    const { categories, posts, match, goto, goBack, sort } = this.props
+    const { categories, posts, match, goto, sort } = this.props
     const category = match.params.category || ''
     const { settings } = this.state
     const sortOptions = [ALPHA, DATE, RATING]
@@ -82,7 +82,7 @@ class CategoryRoute extends Component {
     return (
       <div className="app">
         <Header>
-          {!isRoot && <IconButton src={backIcon} alt="back" onClick={goBack} />}
+          {!isRoot && <IconButton src={backIcon} alt="back" onClick={() => goto(`/`)} />}
           {isRoot ? (
             <HeaderContent padded>Readable</HeaderContent>
           ) : (
@@ -110,6 +110,8 @@ class CategoryRoute extends Component {
                 key={`card_${p.id}`}
                 onLike={() => this.onLike(p.id)}
                 onClick={() => goto(`/${p.category}/${p.id}`)}
+                onEdit={() => goto(`/${p.category}/${p.id}?edit=1`)}
+                onDelete={() => this.onDelete(p.id)}
               />
             ))}
           </CardContainer>
@@ -141,6 +143,10 @@ class CategoryRoute extends Component {
     }
   }
 
+  onDelete = id => {
+    this.props.deletePost(id)
+  }
+
   onLike = id => {
     const { posts, votePost } = this.props
     const post = posts.find(p => p.id === id)
@@ -164,9 +170,9 @@ class CategoryRoute extends Component {
 const mapDispatchToProps = {
   fetchCategories,
   fetchPosts,
-  goBack,
   setSort,
   votePost,
+  deletePost,
   goto: push
 }
 

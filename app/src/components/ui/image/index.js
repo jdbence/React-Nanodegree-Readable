@@ -3,6 +3,7 @@ import styled from 'styled-components'
 
 const ImageHoc = ({ href, height, width, ...props }) => {
   const Image = styled.div`
+    position: relative;
     background-repeat: no-repeat;
     background-position: center center;
     background-size: cover;

@@ -11,7 +11,7 @@ import { Avatar, AvatarDesc } from 'components/ui/avatar'
 import Empty from 'components/ui/empty'
 import { MissingTitleModal } from 'components/ui/modal'
 import SwipeableViews from 'react-swipeable-views'
-import { goBack } from 'react-router-redux'
+import { push } from 'react-router-redux'
 import { fetchPosts, votePost, deletePost, updatePost } from 'modules/PostModule'
 import { fetchComments, voteComment, createComment, deleteComment, updateComment } from 'modules/CommentsModule'
 import { color, capitalize, dateStamp, rnd } from 'utils/StringUtil'
@@ -136,7 +136,7 @@ class PostRoute extends Component {
   state = {
     postSource: '',
     postIndex: -1,
-    edit: false,
+    // edit: false,
     missingTitle: false,
     commentEditing: -1
   }
@@ -154,7 +154,7 @@ class PostRoute extends Component {
     // find the index of the post
     if (this.state.postIndex === -1 && posts.length > 0) {
       const id = match.params.post_id
-      this.updatePostIndex(posts.findIndex(e => e.id === id) || 0)
+      this.readyPostData(id, posts)
       fetchComments(id)
     }
   }
@@ -164,14 +164,14 @@ class PostRoute extends Component {
     // find the index of the post after posts loaded
     if (this.state.postIndex === -1 && posts.length > 0) {
       const id = match.params.post_id
-      this.updatePostIndex(posts.findIndex(e => e.id === id) || 0, false)
+      this.readyPostData(id, posts)
       fetchComments(id)
     }
   }
 
   render() {
-    const { posts, comments, match, goBack, deleteComment } = this.props
-    const { postSource, commentEditing, edit, missingTitle, postIndex } = this.state
+    const { posts, comments, match, deleteComment, edit, goto } = this.props
+    const { postSource, commentEditing, missingTitle, postIndex } = this.state
     const category = match.params.category
     const options = { mode: 'markdown' }
     return (
@@ -180,14 +180,14 @@ class PostRoute extends Component {
           <Header>
             <HeaderContent padded>Editing Article</HeaderContent>
             <IconButton src={saveIcon} alt="save" onClick={this.saveArticle} />
-            <IconButton src={cancelIcon} alt="cancel" onClick={() => this.toggle(EDIT)} />
+            <IconButton src={cancelIcon} alt="cancel" onClick={this.toggleEdit} />
           </Header>
         ) : (
           <Header>
-            <IconButton src={backIcon} alt="back" onClick={goBack} />
+            <IconButton src={backIcon} alt="back" onClick={() => goto(`/${category}`)} />
             <HeaderContent>{capitalize(category)}</HeaderContent>
             <IconButton src={trashIcon} alt="trash" onClick={this.removeArticle} />
-            {posts.length > 0 && <IconButton src={editIcon} alt="edit" onClick={() => this.toggleEdit()} />}
+            {posts.length > 0 && <IconButton src={editIcon} alt="edit" onClick={this.toggleEdit} />}
           </Header>
         )}
         <Page background="white">
@@ -215,6 +215,15 @@ class PostRoute extends Component {
         )}
       </div>
     )
+  }
+
+  readyPostData(id, posts) {
+    const index = posts.findIndex(e => e.id === id) || 0
+    const post = posts[index]
+    this.updatePostIndex(index, false)
+    if (post) {
+      this.updatePost(null, null, posts[index].body)
+    }
   }
 
   onSaveComment = (parentId, id, author, body) => {
@@ -257,24 +266,24 @@ class PostRoute extends Component {
 
   updatePostIndex = postIndex => {
     this.setState({
-      ...this.state,
       postIndex
     })
   }
 
   updatePost = (editor, data, value) => {
     this.setState({
-      ...this.state,
       postSource: value
     })
   }
 
   toggleEdit = () => {
+    const { goto, edit, match } = this.props
     const { postIndex } = this.state
     this.setState({
       [EDIT]: !this.state[EDIT],
       postSource: this.props.posts[postIndex].body
     })
+    goto(edit ? match.url.split('?')[0] : match.url + '?edit=1')
   }
 
   onChange = (prop, value) => {
@@ -300,12 +309,12 @@ class PostRoute extends Component {
   // articles have to be removed locally and remotely
   // after removal, go back to the previous page
   removeArticle = () => {
-    const { posts, deletePost, goBack } = this.props
+    const { posts, deletePost, goto, category } = this.props
     const { postIndex } = this.state
     const id = posts[postIndex].id
     deletePost(id)
     this.toggle(EDIT)
-    goBack()
+    goto(`/${category}`)
   }
 
   saveArticle = () => {
@@ -315,7 +324,7 @@ class PostRoute extends Component {
     const title = getTitle(postSource)
     if (title) {
       updatePost({ id, title: title.text, body: postSource })
-      this.toggle(EDIT)
+      this.toggleEdit()
     } else {
       this.toggle(MISSING_TITLE)
     }
@@ -323,7 +332,7 @@ class PostRoute extends Component {
 }
 
 const mapDispatchToProps = {
-  goBack,
+  goto: push,
   fetchPosts,
   deletePost,
   updatePost,
@@ -340,6 +349,8 @@ const mapStateToProps = state => {
   const category = router.location.pathname.split('/')[1]
   const type = sort.type
   return {
+    category: category,
+    edit: router.location.search.indexOf('edit') !== -1,
     comments: comments.sort(multiSort('-voteScore', '-timestamp')),
     posts: posts.filter(postFilter(category)).sort(postSort(type))
   }
