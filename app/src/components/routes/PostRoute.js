@@ -29,7 +29,9 @@ const MISSING_TITLE = 'missingTitle'
 const EDIT = 'edit'
 
 const styles = {
-  slideContainer: {},
+  container: {
+    width: '100%'
+  },
   slide: {
     padding: 15,
     minHeight: 100,
@@ -89,7 +91,7 @@ const CardsView = ({
   onEdit,
   onDelete
 }) => (
-  <SwipeableViews enableMouseEvents slideStyle={styles.slideContainer} index={index} onChangeIndex={onChange}>
+  <SwipeableViews enableMouseEvents style={styles.container} index={index} onChangeIndex={onChange}>
     {posts.map(p => (
       <div key={`card_${p.id}`} style={{ ...styles.slide }}>
         <Preview>{md([p.body])}</Preview>

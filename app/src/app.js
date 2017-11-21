@@ -1,11 +1,11 @@
-import React, { Component } from 'react'
+import React, { PureComponent } from 'react'
 import { Provider } from 'react-redux'
 import { Switch, Route } from 'react-router'
 import { ConnectedRouter } from 'react-router-redux'
 import { PostRoute, CategoryRoute, CreateRoute } from 'components/routes'
 import store, { history } from './store'
 
-class App extends Component {
+class App extends PureComponent {
   render() {
     return (
       <Provider store={store}>
