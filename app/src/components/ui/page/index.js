@@ -6,12 +6,9 @@ const Page = styled.main`
   width: 100%;
   margin: 0 auto;
   flex: 1;
-  ${props => (props.background ? `background-color: ${props.background};` : '')} ${props =>
-      props.row
-        ? `
-      flex-direction: row;
-      display: flex;
-      `
-        : ''};
+  ${props => (props.background ? `background-color: ${props.background};` : '')}
+  ${props => props.row ? `display: flex; flex-direction: row;`: ''}
+  ${props => props.flex ? `display: flex;`: ''}
+    
 `
 export default Page

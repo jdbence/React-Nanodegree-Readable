@@ -37,11 +37,6 @@ const styles = {
   }
 }
 
-const CommentSection = styled.section`
-  margin: 0 auto;
-  max-width: 700px;
-`
-
 const Comment = styled.div`
   padding: 10px;
   border: 1px solid #ddd;
@@ -51,9 +46,23 @@ const CommentFooter = styled.div`
   padding-top: 10px;
 `
 
+const CommentActions = styled.div`
+  display: flex;
+  padding: 10px 0;
+  align-items: center;
+  justify-content: space-between;
+`
+
 const AvatarContainer = styled.div`
   display: flex;
   margin-bottom: 10px;
+`
+
+const Preview = styled.div`
+  & img {
+    max-width: 100%;
+    height: auto;
+  }
 `
 const CommentButtonStyle = `
   width: 40px;
@@ -76,15 +85,19 @@ const CardsView = ({
   onSave,
   onChange,
   onLike,
+  onLikeArticle,
   onEdit,
   onDelete
 }) => (
   <SwipeableViews enableMouseEvents slideStyle={styles.slideContainer} index={index} onChangeIndex={onChange}>
     {posts.map(p => (
       <div key={`card_${p.id}`} style={{ ...styles.slide }}>
-        {md([p.body])}
-        <CommentSection>
-          Comments {comments.filter(c => c.parentId === p.id).length}
+        <Preview>{md([p.body])}</Preview>
+        <section>
+          <CommentActions>
+            <ToggleHeart onClick={()=>onLikeArticle(p.id, p.voted)} voted={p.voted} voteScore={p.voteScore} right/>
+            Comments {comments.filter(c => c.parentId === p.id).length}
+          </CommentActions>
           <EditComment onSave={onSave} post={p.id} author={localStorage.getItem('author') || ''} comment={''} />
           {comments.filter(c => c.parentId === p.id).map(
             c =>
@@ -126,7 +139,7 @@ const CardsView = ({
                 </Comment>
               )
           )}
-        </CommentSection>
+        </section>
       </div>
     ))}
   </SwipeableViews>
@@ -193,16 +206,17 @@ class PostRoute extends Component {
             {!missingPost && <IconButton src={editIcon} alt="edit" onClick={this.toggleEdit} />}
           </Header>
         )}
-        <Page background="white">
+        <Page background="white" maxWidth={800} flex>
           {missingPost || posts.length === 0 ? (
             <Empty />
           ) : edit ? (
-            <CodeMirror value={postSource} onBeforeChange={this.updatePost} options={options} />
+            <CodeMirror value={postSource} onBeforeChange={this.updatePost} options={options} className={'mdPostFull'}/>
           ) : (
             <CardsView
               onCancel={() => this.onChange('commentEditing', -1)}
               onSave={this.onSaveComment}
               onLike={this.onLike}
+              onLikeArticle={this.onLikeArticle}
               onChange={this.onChangePage}
               onEdit={id => this.onChange('commentEditing', id)}
               onDelete={deleteComment}
@@ -264,6 +278,11 @@ class PostRoute extends Component {
     if (comment) {
       voteComment(id, comment.voted ? 'downVote' : 'upVote')
     }
+  }
+  
+  onLikeArticle = (id, voted) => {
+    const { votePost } = this.props
+    votePost(id, voted ? 'downVote' : 'upVote')
   }
 
   onChangePage = index => {
