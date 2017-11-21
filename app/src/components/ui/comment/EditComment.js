@@ -96,7 +96,10 @@ export default class EditComment extends Component {
     const { author, comment } = this.state
     const { post, id, onSave } = this.props
     onSave(post, id, author, comment)
-    this.onChange('edit', false)
+    this.setState({
+      edit: false,
+      comment: ''
+    })
   }
 
   handleCancel = () => {
@@ -104,6 +107,9 @@ export default class EditComment extends Component {
     if (onCancel) {
       onCancel()
     }
-    this.onChange('edit', false)
+    this.setState({
+      edit: false,
+      comment: ''
+    })
   }
 }
