@@ -262,6 +262,7 @@ class PostRoute extends Component {
         parentId,
         timestamp: new Date().getTime()
       })
+      localStorage.setItem('author', author)
     } else {
       updateComment({
         id,

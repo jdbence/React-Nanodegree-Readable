@@ -24,7 +24,9 @@ export default class EditComment extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setDefaults(nextProps)
+    if(!this.state.edit){
+      this.setDefaults(nextProps)
+    }
   }
 
   componentWillMount() {
@@ -33,13 +35,14 @@ export default class EditComment extends Component {
 
   componentWillUnmount() {
     this.textarea = null
+    clearTimeout(this.focusTimeout)
   }
 
   render() {
     const { author, comment, edit } = this.state
     if (!edit) {
       return (
-        <Container center onClick={() => this.showForm()}>
+        <Container center onClick={this.showForm}>
           Add a Comment!
         </Container>
       )
@@ -81,7 +84,8 @@ export default class EditComment extends Component {
 
   showForm = () => {
     this.onChange('edit', true)
-    setTimeout(() => {
+    clearTimeout(this.focusTimeout)
+    this.focusTimeout = setTimeout(() => {
       if (this.textarea) {
         this.textarea.focus()
       }
