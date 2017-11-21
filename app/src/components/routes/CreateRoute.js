@@ -61,7 +61,6 @@ const styles = {
 
 class CreateRoute extends Component {
   state = {
-    edit: false,
     create: false,
     missingTitle: false,
     postSource: exampleSource,
@@ -124,9 +123,7 @@ class CreateRoute extends Component {
           </Page>
         )}
         {create && <CreateArticleModal onCreate={this.createArticle} onClose={() => this.toggle(CREATE)} />}
-        {missingTitle && (
-          <MissingTitleModal onAddTitle={() => this.addTitle()} onClose={() => this.toggle(MISSING_TITLE)} />
-        )}
+        {missingTitle && <MissingTitleModal onAddTitle={() => this.addTitle()} onClose={() => this.toggle(MISSING_TITLE)} />}
       </div>
     )
   }

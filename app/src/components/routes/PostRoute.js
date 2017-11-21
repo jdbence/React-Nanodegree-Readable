@@ -190,7 +190,7 @@ class PostRoute extends Component {
     const { posts, comments, match, deleteComment, edit, goto } = this.props
     const { postSource, commentEditing, missingTitle, postIndex, missingPost } = this.state
     const category = match.params.category
-    const options = { mode: 'markdown' }
+    const options = { mode: 'markdown', lineNumbers: true, safe: true }
 
     return (
       <div className="app">
